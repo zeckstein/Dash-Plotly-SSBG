@@ -42,3 +42,5 @@ Thumbs.db
 # data/*.pkl
 # data/*.pickle
 
+# log files
+*.log

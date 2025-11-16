@@ -5,13 +5,6 @@ Chloropleth map component for US states and territories
 import plotly.graph_objects as go
 from dash import dcc
 import pandas as pd
-import logging
-
-logging.basicConfig(
-    filename="ssbg_map.log",  # Log file name
-    level=logging.WARNING,  # Log level
-    format="%(asctime)s %(levelname)s:%(message)s",
-)
 
 # State abbreviations mapping (including territories)
 STATE_ABBREV = {
@@ -91,10 +84,7 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
     map_df = df.copy()
     map_df["state_abbrev"] = map_df["state_name"].map(STATE_ABBREV)
 
-    # Filter out states without abbreviations (if any) and log missing ones
-    missing_states = map_df[map_df["state_abbrev"].isna()]["state_name"].tolist()
-    if missing_states:
-        logging.warning(f"Missing abbreviations for states: {missing_states}")
+    # Filter out states without abbreviations (if any)
     map_df = map_df[map_df["state_abbrev"].notna()]
 
     # SSBG color scale: from light blue (secondary) to dark blue (primary)

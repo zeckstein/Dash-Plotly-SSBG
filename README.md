@@ -17,7 +17,7 @@ A Dash Plotly web application for visualizing Social Services Block Grant (SSBG)
   - State-specific summary cards
   - Time series graphs for state expenditures and recipients
   - Service category breakdown (pie and bar charts)
-  - Full data table with sorting and filtering
+  - Full data table with sorting
   - Data export functionality (CSV download)
   - Navigation back to national overview
 
@@ -25,10 +25,6 @@ A Dash Plotly web application for visualizing Social Services Block Grant (SSBG)
 
 1. Install dependencies using `uv`:
 ```bash
-# Install uv if you haven't already
-# Windows: powershell -ExecutionPolicy Bypass -c "irm https://astral.sh/uv/install.ps1 | iex"
-# macOS/Linux: curl -LsSf https://astral.sh/uv/install.sh | sh
-
 # Install project dependencies
 uv sync
 ```
@@ -40,12 +36,7 @@ uv sync
 ### Development
 ```bash
 # Using uv (recommended)
-uv run python app.py
-
-# Or activate the virtual environment first
-uv sync
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-python app.py
+uv run app.py
 ```
 
 The application will be available at `http://localhost:8050`
@@ -55,25 +46,15 @@ The application will be available at `http://localhost:8050`
 gunicorn app:server
 ```
 
-## Deployment
+## Deployment Thoughts
 
-### Render.com (Recommended)
+### Render.com
 
-1. Create a new Web Service on Render
-2. Connect your GitHub repository
-3. Set build command: `uv sync` (or `pip install -r requirements.txt` if using pip)
-4. Set start command: `gunicorn app:server`
-5. Deploy!
+1. Connect GitHub repository
+2. Set build command: `uv sync` (or `pip install -r requirements.txt` if using pip)
+3. Set start command: `gunicorn app:server`
+4. Deploy!
 
-**Note:** If `uv` is not available on the platform, you may need to create a `requirements.txt` file from your `pyproject.toml` using `uv pip compile pyproject.toml -o requirements.txt`
-
-### Railway.app
-
-1. Create a new project on Railway
-2. Connect your GitHub repository
-3. Railway will auto-detect the Python app
-4. Ensure `Procfile` and `runtime.txt` are in the repository
-5. Deploy!
 
 ## Project Structure
 
@@ -106,23 +87,4 @@ The application expects a pandas DataFrame stored as a pickle file with the foll
 - `service_category`: Service category name
 - `total_ssbg_expenditures`: Total SSBG expenditures amount
 - `total_recipients`: Total number of recipients
-- Additional columns as needed
-
-## Customization
-
-### SSBG Colors
-
-To apply SSBG brand colors, update the color values in `assets/custom.css` or modify the Bootstrap theme in `app.py`.
-
-### Adding New Visualizations
-
-Add new graph components in `components/graphs.py` and integrate them into the page layouts in `pages/`.
-
-## License
-
-[Add your license here]
-
-## Contact
-
-[Add contact information here]
-
+- and more... see SSBG data repo for run down # TODO add data dict for download

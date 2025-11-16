@@ -113,3 +113,6 @@
 2025-11-16 00:27:58,644 WARNING:Missing abbreviations for states: ['Massachusetts Commission for the Blind']
 2025-11-16 00:28:21,893 WARNING:Missing abbreviations for states: ['Massachusetts Commission for the Blind']
 2025-11-16 00:29:59,072 WARNING:Missing abbreviations for states: ['Massachusetts Commission for the Blind']
+2025-11-16 00:39:54,569 INFO:Dash is running on http://127.0.0.1:8050/
+
+2025-11-16 00:39:57,288 WARNING:Missing abbreviations for states: ['Massachusetts Commission for the Blind']
