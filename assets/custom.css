@@ -1,0 +1,203 @@
+/* SSBG Dashboard Custom Styles */
+/* SSBG Brand Colors:
+   Primary: rgb(51, 106, 144) - Main blue
+   Secondary: rgb(90, 169, 230) - Light blue
+   Tertiary: rgb(212, 136, 41) - Orange/gold
+*/
+
+:root {
+    --ssbg-primary: rgb(51, 106, 144);
+    --ssbg-primary-dark: rgb(38, 74, 100);
+    --ssbg-secondary: rgb(90, 169, 230);
+    --ssbg-tertiary: rgb(212, 136, 41);
+    --ssbg-primary-light: rgba(51, 106, 144, 0.1);
+    --ssbg-secondary-light: rgba(90, 169, 230, 0.1);
+}
+
+body {
+    font-family: 'Arial', 'Helvetica', sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+/* Header styles */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    color: var(--ssbg-primary);
+}
+
+h1 {
+    color: var(--ssbg-primary);
+    border-bottom: 3px solid var(--ssbg-secondary);
+    padding-bottom: 10px;
+}
+
+/* Card styles */
+.card {
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(51, 106, 144, 0.2);
+}
+
+.card:hover {
+    box-shadow: 0 4px 12px rgba(51, 106, 144, 0.2) !important;
+    border-color: var(--ssbg-secondary);
+}
+
+.card-header {
+    background-color: var(--ssbg-primary) !important;
+    color: white !important;
+    font-weight: bold;
+}
+
+.card-title {
+    color: var(--ssbg-primary);
+    font-weight: 600;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--ssbg-primary) !important;
+    border-color: var(--ssbg-primary) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--ssbg-primary-dark) !important;
+    border-color: var(--ssbg-primary-dark) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(51, 106, 144, 0.3);
+}
+
+.btn-secondary {
+    background-color: var(--ssbg-secondary) !important;
+    border-color: var(--ssbg-secondary) !important;
+    color: white !important;
+}
+
+.btn-secondary:hover {
+    background-color: rgb(70, 149, 210) !important;
+    border-color: rgb(70, 149, 210) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(90, 169, 230, 0.3);
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* Graph container */
+.dash-graph {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(51, 106, 144, 0.1);
+    border: 1px solid rgba(51, 106, 144, 0.15);
+}
+
+/* Filter controls */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* Data table styles */
+.dash-table-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Container padding */
+.container-fluid {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+
+/* Loading spinner */
+.dash-spinner {
+    margin: 20px auto;
+}
+
+/* Link styles */
+a {
+    color: var(--ssbg-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    color: var(--ssbg-primary-dark);
+    text-decoration: underline;
+}
+
+/* Clean, bold, non-distracting design */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(51, 106, 144, 0.1) !important;
+}
+
+/* Accent colors for highlights */
+.text-primary {
+    color: var(--ssbg-primary) !important;
+}
+
+.text-secondary {
+    color: var(--ssbg-secondary) !important;
+}
+
+.text-tertiary {
+    color: var(--ssbg-tertiary) !important;
+}
+
+.bg-primary-light {
+    background-color: var(--ssbg-primary-light) !important;
+}
+
+.bg-secondary-light {
+    background-color: var(--ssbg-secondary-light) !important;
+}
+
+/* Radio buttons and form controls */
+.form-check-input:checked {
+    background-color: var(--ssbg-primary) !important;
+    border-color: var(--ssbg-primary) !important;
+}
+
+.form-check-input:focus {
+    border-color: var(--ssbg-secondary) !important;
+    box-shadow: 0 0 0 0.25rem rgba(51, 106, 144, 0.25) !important;
+}
+
+/* Range slider accent */
+.rc-slider-handle {
+    border-color: var(--ssbg-primary) !important;
+}
+
+.rc-slider-handle:active {
+    border-color: var(--ssbg-secondary) !important;
+    box-shadow: 0 0 0 5px rgba(51, 106, 144, 0.2) !important;
+}
+
+.rc-slider-track {
+    background-color: var(--ssbg-secondary) !important;
+}
+
