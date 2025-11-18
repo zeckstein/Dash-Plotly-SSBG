@@ -80,11 +80,28 @@ Dash-Plotly-SSBG/
 ```
 
 ## Data Format
+The application expects a pandas DataFrame stored as a pickle file in data/ that looks like this currently:
 
-The application expects a pandas DataFrame stored as a pickle file with the following columns:
-- `year`: Year of the data
-- `state_name`: Name of the state or territory
-- `service_category`: Service category name
-- `total_ssbg_expenditures`: Total SSBG expenditures amount
-- `total_recipients`: Total number of recipients
-- and more... see SSBG data repo for run down # TODO add data dict for download
+```<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 21240 entries, 0 to 21239
+Data columns (total 15 columns):
+ #   Column                           Non-Null Count  Dtype   
+---  ------                           --------------  -----   
+ 0   year                             21240 non-null  category
+ 1   state_name                       21240 non-null  category
+ 2   line_num                         21240 non-null  category
+ 3   service_category                 21240 non-null  category
+ 4   ssbg_expenditures                21240 non-null  int64   
+ 5   tanf_transfer_funds              21240 non-null  int64   
+ 6   total_ssbg_expenditures          21240 non-null  int64   
+ 7   other_fed_state_and_local_funds  21240 non-null  int64   
+ 8   total_expenditures               21240 non-null  int64   
+ 9   children                         21240 non-null  int64   
+ 10  adults_59_and_younger            21240 non-null  int64   
+ 11  adults_60_and_older              21240 non-null  int64   
+ 12  adults_unknown                   21240 non-null  int64   
+ 13  total_adults                     21240 non-null  int64   
+ 14  total_recipients                 21240 non-null  int64   
+dtypes: category(4), int64(11)
+memory usage: 1.9 MB
+```
