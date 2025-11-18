@@ -87,11 +87,11 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
     # Filter out states without abbreviations (if any)
     map_df = map_df[map_df["state_abbrev"].notna()]
 
-    # SSBG color scale: from light blue (secondary) to dark blue (primary)
+    # SSBG color scale: from white to dark blue
     ssbg_colorscale = [
         [0, "rgb(255, 255, 255)"],  # white
         [0.5, "rgb(70, 137, 187)"],  # Medium blue
-        [1, "rgb(38, 74, 100)"],  # Primary dark blue
+        [1, "rgb(38, 74, 100)"],  # dark blue
     ]
 
     fig = go.Figure(
@@ -101,9 +101,21 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             locationmode="USA-states",
             colorscale=ssbg_colorscale,
             text=map_df.apply(
-                lambda row: f"<b>{row['state_name']}</b><br>"
-                + f"Expenditures: ${row['total_ssbg_expenditures']:,.0f}<br>"
-                + f"Recipients: {row['total_recipients']:,.0f}",
+                lambda row: (
+                    f"<b style='font-size:32px;'>{row['state_name']}</b><br>"
+                    f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span>"
+                    f"<b style='font-size:20px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
+                    f"<span style='font-size:16px;'>SSBG Expenditures:</span> "
+                    f"<b style='font-size:16px;'>${row['ssbg_expenditures']:,.0f}</b><br>"
+                    f"<span style='font-size:16px;'>TANF Transfer Funds:</span> "
+                    f"<b style='font-size:16px;'>${row['tanf_transfer_funds']:,.0f}</b><br>"
+                    f"<span style='font-size:20px;'><b>Total Recipients:</b></span> "
+                    f"<b style='font-size:20px;'>{row['total_recipients']:,.0f}</b><br>"
+                    f"<span style='font-size:16px;'>Children:</span> "
+                    f"<b style='font-size:16px;'>{row['children']:,.0f}</b><br>"
+                    f"<span style='font-size:16px;'>Adults:</span> "
+                    f"<b style='font-size:16px;'>{row['total_adults']:,.0f}</b>"
+                ),
                 axis=1,
             ),
             hovertemplate="%{text}<extra></extra>",
@@ -128,6 +140,14 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
         ),
         height=600,
         margin=dict(l=0, r=0, t=50, b=0),
+    )
+    fig.update_traces(
+        hoverlabel=dict(
+            bgcolor="white",
+            font_size=14,
+            font_family="Arial",
+            font_color="black",
+        )
     )
 
     return dcc.Graph(
