@@ -292,6 +292,9 @@ def get_state_service_breakdown(df, state_name, year=None):
 
     grouped.columns = ["service_category", "expenditures", "recipients"]
 
+    # drop service categories with zero expenditures
+    grouped = grouped[grouped["expenditures"] > 0]
+
     return grouped.sort_values("expenditures", ascending=False)
 
 
