@@ -49,37 +49,13 @@ def layout():
                     width=12,
                 )
             ),
-            # Row 1
+            # Filters Year and Service Category
             dbc.Row(
                 [
                     dbc.Col(
                         create_year_dropdown(min_year, max_year, "national"),
                         width=12,
                         md=4,
-                    ),
-                    dbc.Col(
-                        id="national-total-expenditures-card",
-                        width=12,
-                        md=4,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-total-recipients-card",
-                        width=12,
-                        md=4,
-                        className="mb-3",
-                    ),
-                ],
-                className="mb-4",
-            ),
-            # Service Categories
-            dbc.Row(
-                [
-                    dbc.Col(
-                        create_metric_toggle("national"),
-                        width=12,
-                        md=4,
-                        className="d-flex flex-column justify-content-end",
                     ),
                     dbc.Col(
                         create_service_category_dropdown(
@@ -90,6 +66,66 @@ def layout():
                     ),
                 ],
                 className="mb-4",
+            ),
+            # Summary Cards
+            # Summary Cards Row (Total SSBG Expenditures & Total Recipients)
+            dbc.Row(
+                [
+                    dbc.Col(
+                        id="national-total-ssbg-expenditures-card",
+                        width=12,
+                        md=6,
+                        className="mb-3 align-items-center justify-content-center",
+                    ),
+                    dbc.Col(
+                        id="national-total-recipients-card",
+                        width=12,
+                        md=6,
+                        className="mb-3",
+                    ),
+                ],
+                className="mb-4",
+            ),
+            # Subtotals Row (SSBG Expenditures, TANF Transfer Funds, Children, Adults)
+            dbc.Row(
+                [
+                    dbc.Col(
+                        id="national-ssbg-expenditures-card",
+                        width=12,
+                        md=3,
+                        className="mb-3",
+                    ),
+                    dbc.Col(
+                        id="national-tanf-transfer-card",
+                        width=12,
+                        md=3,
+                        className="mb-3",
+                    ),
+                    dbc.Col(
+                        id="national-children-card",
+                        width=12,
+                        md=3,
+                        className="mb-3",
+                    ),
+                    dbc.Col(
+                        id="national-adults-card",
+                        width=12,
+                        md=3,
+                        className="mb-3",
+                    ),
+                ],
+                className="mb-4",
+            ),
+            # Metric Toggle Row
+            dbc.Row(
+                [
+                    dbc.Col(
+                        create_metric_toggle("national"),
+                        width=12,
+                        md=4,
+                        className="d-flex flex-column justify-content-end",
+                    ),
+                ]
             ),
             # Chloropleth Map (Main Feature)
             dbc.Row(
@@ -198,8 +234,12 @@ def layout():
 # Callbacks
 @callback(
     [
-        Output("national-total-expenditures-card", "children"),
+        Output("national-total-ssbg-expenditures-card", "children"),
         Output("national-total-recipients-card", "children"),
+        Output("national-ssbg-expenditures-card", "children"),
+        Output("national-tanf-transfer-card", "children"),
+        Output("national-children-card", "children"),
+        Output("national-adults-card", "children"),
     ],
     [
         Input("national-year-dropdown", "value"),
@@ -210,14 +250,20 @@ def update_summary_cards(year, service_categories):
     """Update summary cards"""
     totals = get_national_totals(df, year, service_categories)
     all_time_totals = get_national_totals(df, None, None)
+    unique_vals = get_unique_values(df)
 
-    expenditures_card = dbc.Card(
+    total_ssbg_expenditures_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Total Expenditures", className="card-title"),
-                html.H2(f"${totals['expenditures']:,.0f}", className="fw-bold"),
+                html.H5(
+                    f"Total SSBG Expenditures FY{str(year)[-2:]}",
+                    className="card-title",
+                ),
+                html.H2(
+                    f"${totals['total_ssbg_expenditures']:,.0f}", className="fw-bold"
+                ),
                 html.P(
-                    f"All-time: ${all_time_totals['expenditures']:,.0f}",
+                    f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures']:,.0f}",
                     className="text-muted mb-0",
                 ),
             ]
@@ -228,10 +274,10 @@ def update_summary_cards(year, service_categories):
     recipients_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Total Recipients", className="card-title"),
-                html.H2(f"{totals['recipients']:,.0f}", className="fw-bold"),
+                html.H5(f"Total Recipients FY{str(year)[-2:]}", className="card-title"),
+                html.H2(f"{totals['total_recipients']:,.0f}", className="fw-bold"),
                 html.P(
-                    f"All-time: {all_time_totals['recipients']:,.0f}",
+                    f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
                     className="text-muted mb-0",
                 ),
             ]
@@ -239,7 +285,58 @@ def update_summary_cards(year, service_categories):
         className="shadow-sm h-100",
     )
 
-    return expenditures_card, recipients_card
+    ssbg_expenditures_card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(
+                    f"SSBG Expenditures FY{str(year)[-2:]}", className="card-title"
+                ),
+                html.H2(f"${totals['ssbg_expenditures']:,.0f}", className="fw-bold"),
+            ]
+        ),
+        className="shadow-sm h-100",
+    )
+
+    tanf_transfer_card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(
+                    f"TANF Transfer Funds FY{str(year)[-2:]}", className="card-title"
+                ),
+                html.H2(f"${totals['tanf_transfer_funds']:,.0f}", className="fw-bold"),
+            ]
+        ),
+        className="shadow-sm h-100",
+    )
+
+    children_card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(f"Children Served FY{str(year)[-2:]}", className="card-title"),
+                html.H2(f"{totals['children']:,.0f}", className="fw-bold"),
+            ]
+        ),
+        className="shadow-sm h-100",
+    )
+
+    adults_card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(f"Adults Served FY{str(year)[-2:]}", className="card-title"),
+                html.H2(f"{totals['total_adults']:,.0f}", className="fw-bold"),
+            ]
+        ),
+        className="shadow-sm h-100",
+    )
+
+    return (
+        total_ssbg_expenditures_card,
+        recipients_card,
+        ssbg_expenditures_card,
+        tanf_transfer_card,
+        children_card,
+        adults_card,
+    )
 
 
 @callback(
@@ -264,8 +361,8 @@ def update_map(year, service_categories, metric):
     ],
 )
 def update_expenditures_time_series(year, service_categories):
-    """Update expenditures time series graph"""
-    ts_data = get_time_series_data(df, "expenditures", service_categories)
+    """Update total_ssbg_expenditures time series graph"""
+    ts_data = get_time_series_data(df, "total_ssbg_expenditures", service_categories)
 
     fig = px.line(
         ts_data,
@@ -293,7 +390,7 @@ def update_expenditures_time_series(year, service_categories):
 )
 def update_recipients_time_series(year, service_categories):
     """Update recipients time series graph"""
-    ts_data = get_time_series_data(df, "recipients", service_categories)
+    ts_data = get_time_series_data(df, "total_recipients", service_categories)
 
     fig = px.line(
         ts_data,

@@ -31,7 +31,16 @@ def get_national_totals(df, year=None, service_categories=None):
 
     Returns:
     --------
-    dict with 'expenditures' and 'recipients' totals
+    dict with 'expenditures' and 'recipients' totals:
+    'total_expenditures' = total SSBG expenditures + 'Other Fed State and Local funds'
+    'total_ssbg_expenditures' = ssbg_expenditures + 'tanf_transfer_funds'
+    'percent_total_ssbg_expenditures_of_total_expenditures',
+    'average_total_ssbg_expenditures',
+    'average_total_recipients',
+    'average_ssbg_expenditures',
+    'average_tanf_expenditures',
+    'average_child_recipients',
+    'average_adult_recipients',
     """
     filtered_df = df.copy()
 
@@ -44,8 +53,38 @@ def get_national_totals(df, year=None, service_categories=None):
         ]
 
     return {
-        "expenditures": int(filtered_df["total_ssbg_expenditures"].sum()),
-        "recipients": int(filtered_df["total_recipients"].sum()),
+        "total_ssbg_expenditures": int(filtered_df["total_ssbg_expenditures"].sum()),
+        "ssbg_expenditures": int(filtered_df["ssbg_expenditures"].sum()),
+        "tanf_transfer_funds": int(filtered_df["tanf_transfer_funds"].sum()),
+        "total_recipients": int(filtered_df["total_recipients"].sum()),
+        "children": int(filtered_df["children"].sum()),
+        "total_adults": int(filtered_df["total_adults"].sum()),
+        "total_expenditures": int(filtered_df["total_expenditures"].sum()),
+        "percent_total_ssbg_expenditures_of_total_expenditures": int(
+            (
+                filtered_df["total_ssbg_expenditures"].sum()
+                / filtered_df["total_expenditures"].sum()
+            )
+            * 100
+        ),
+        "average_total_ssbg_expenditures": int(
+            filtered_df.groupby("year")["total_ssbg_expenditures"].sum().mean()
+        ),
+        "average_total_recipients": int(
+            filtered_df.groupby("year")["total_recipients"].sum().mean()
+        ),
+        "average_ssbg_expenditures": int(
+            filtered_df.groupby("year")["ssbg_expenditures"].sum().mean()
+        ),
+        "average_tanf_expenditures": int(
+            filtered_df.groupby("year")["tanf_transfer_funds"].sum().mean()
+        ),
+        "average_child_recipients": int(
+            filtered_df.groupby("year")["children"].sum().mean()
+        ),
+        "average_adult_recipients": int(
+            filtered_df.groupby("year")["total_adults"].sum().mean()
+        ),
     }
 
 
@@ -187,7 +226,8 @@ def get_map_data(df, metric="recipients", year=None, service_categories=None):
 
     Returns:
     --------
-    pd.DataFrame with columns: state_name, value, total_ssbg_expenditures, total_recipients
+    pd.DataFrame with columns: state_name, value, total_ssbg_expenditures, ssbg_expenditures, tanf_transfer_funds,
+    total_recipients, children, total_adults
     """
     filtered_df = df.copy()
 
@@ -201,7 +241,16 @@ def get_map_data(df, metric="recipients", year=None, service_categories=None):
     # Group by state
     grouped = (
         filtered_df.groupby("state_name")
-        .agg({"total_ssbg_expenditures": "sum", "total_recipients": "sum"})
+        .agg(
+            {
+                "total_ssbg_expenditures": "sum",
+                "total_recipients": "sum",
+                "ssbg_expenditures": "sum",
+                "tanf_transfer_funds": "sum",
+                "children": "sum",
+                "total_adults": "sum",
+            }
+        )
         .reset_index()
     )
 
@@ -284,7 +333,8 @@ def get_unique_values(df):
 
     Returns:
     --------
-    dict with 'years', 'states', 'service_categories'
+    dict with 'years', 'states', 'service_categories',
+
     """
     return {
         "years": sorted([int(y) for y in df["year"].unique()]),
