@@ -103,7 +103,7 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             text=map_df.apply(
                 lambda row: (
                     f"<b style='font-size:32px;'>{row['state_name']}</b><br>"
-                    f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span>"
+                    f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span> "
                     f"<b style='font-size:20px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>SSBG Expenditures:</span> "
                     f"<b style='font-size:16px;'>${row['ssbg_expenditures']:,.0f}</b><br>"
