@@ -15,6 +15,11 @@ from utils.data_loader import (
     get_state_full_data,
     get_unique_values,
 )
+from components.graphs import (
+    create_pie_chart,
+    create_time_series_line_chart,
+    create_bar_chart,
+)
 
 # Load data once
 df = load_data()
@@ -128,6 +133,23 @@ def layout(state_name="Alabama"):
                 ],
                 className="mb-4",
             ),
+            # Service Category Breakdown
+            dbc.Row(
+                [
+                    dbc.Col(
+                        html.Div(id="state-service-bar"),
+                        width=12,
+                        md=6,
+                        className="mb-4",
+                    ),
+                    dbc.Col(
+                        html.Div(id="state-service-recipient-pie"),
+                        width=12,
+                        md=6,
+                        className="mb-4",
+                    ),
+                ]
+            ),
             # Time Series Graphs
             # TODO: add line for national average
             dbc.Row(
@@ -140,23 +162,6 @@ def layout(state_name="Alabama"):
                     ),
                     dbc.Col(
                         html.Div(id="state-recipients-time-series"),
-                        width=12,
-                        md=6,
-                        className="mb-4",
-                    ),
-                ]
-            ),
-            # Service Category Breakdown
-            dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(id="state-service-pie"),
-                        width=12,
-                        md=6,
-                        className="mb-4",
-                    ),
-                    dbc.Col(
-                        html.Div(id="state-service-bar"),
                         width=12,
                         md=6,
                         className="mb-4",
@@ -311,6 +316,74 @@ def update_state_title(pathname):
     return "SSBG Report: Alabama"
 
 
+@callback(
+    Output("state-service-bar", "children"),
+    [Input("state-year-dropdown", "value"), Input("url", "pathname")],
+)
+def update_state_service_bar(year, pathname):
+    """Update service category bar chart"""
+    if pathname and pathname.startswith("/state/"):
+        state_name = unquote(pathname.replace("/state/", ""))
+    else:
+        state_name = "Alabama"
+
+    breakdown = get_state_service_breakdown(df, state_name, year)
+
+    return create_bar_chart(
+        breakdown,
+        x_col="expenditures",
+        y_col="service_category",
+        orientation="h",
+        title=(
+            f"Service Categories by Expenditures ({year}) - {state_name}"
+            if year
+            else f"Service Categories by Expenditures - {state_name}"
+        ),
+    )
+
+
+@callback(
+    Output("state-service-recipient-pie", "children"),
+    [Input("state-year-dropdown", "value"), Input("url", "pathname")],
+)
+def update_state_service_recipient_pie(year, pathname):
+    """Update service category pie chart"""
+    if pathname and pathname.startswith("/state/"):
+        state_name = unquote(pathname.replace("/state/", ""))
+    else:
+        state_name = "Alabama"
+
+    # service category breakdown by recipients
+    breakdown = get_state_service_breakdown(df, state_name, year)
+
+    fig = px.pie(
+        breakdown,
+        names="service_category",
+        values="recipients",
+        title=(
+            f"Service Category Breakdown by Recipients ({year}) - {state_name}"
+            if year
+            else f"Service Category Breakdown by Recipients - {state_name}"
+        ),
+    )
+    fig.update_layout(template="plotly_white", height=400)
+    fig.update_traces(
+        hovertemplate="<b>%{label}</b><br>Recipients: %{value:,}<br>Percent: %{percent}"
+    )
+
+    return create_pie_chart(
+        breakdown,
+        names_col="service_category",
+        values_col="recipients",
+        title=(
+            f"Service Category Breakdown by Recipients ({year}) - {state_name}"
+            if year
+            else f"Service Category Breakdown by Recipients - {state_name}"
+        ),
+        hovertemplate="<b>%{label}</b><br>Recipients: %{value:,}<br>Percent: %{percent}",
+    )
+
+
 # TODO Make sure line graphs start at zero for y-axis
 # TODO Examine all card subtitles for clarity, consistency, accuracy
 # TODO Consider new cards or graphs to add or swap
@@ -370,69 +443,6 @@ def update_state_recipients_time_series(year, service_categories, pathname):
         labels={"year": "Year", "value": "Recipients"},
     )
     fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
-
-    return dcc.Graph(figure=fig, className="mb-4")
-
-
-@callback(
-    Output("state-service-pie", "children"),
-    [Input("state-year-dropdown", "value"), Input("url", "pathname")],
-)
-def update_state_service_pie(year, pathname):
-    """Update service category pie chart"""
-    if pathname and pathname.startswith("/state/"):
-        state_name = unquote(pathname.replace("/state/", ""))
-    else:
-        state_name = "Alabama"
-
-    breakdown = get_state_service_breakdown(df, state_name, year)
-
-    fig = px.pie(
-        breakdown,
-        names="service_category",
-        values="expenditures",
-        title=(
-            f"Service Category Breakdown by Expenditures ({year}) - {state_name}"
-            if year
-            else f"Service Category Breakdown by Expenditures - {state_name}"
-        ),
-    )
-    fig.update_layout(template="plotly_white", height=400)
-
-    return dcc.Graph(figure=fig, className="mb-4")
-
-
-@callback(
-    Output("state-service-bar", "children"),
-    [Input("state-year-dropdown", "value"), Input("url", "pathname")],
-)
-def update_state_service_bar(year, pathname):
-    """Update service category bar chart"""
-    if pathname and pathname.startswith("/state/"):
-        state_name = unquote(pathname.replace("/state/", ""))
-    else:
-        state_name = "Alabama"
-
-    breakdown = get_state_service_breakdown(df, state_name, year)
-
-    fig = px.bar(
-        breakdown,
-        x="expenditures",
-        y="service_category",
-        orientation="h",
-        title=(
-            f"Service Categories by Expenditures ({year}) - {state_name}"
-            if year
-            else f"Service Categories by Expenditures - {state_name}"
-        ),
-        labels={
-            "expenditures": "Expenditures ($)",
-            "service_category": "Service Category",
-        },
-    )
-    fig.update_layout(
-        template="plotly_white", height=400, yaxis={"categoryorder": "total ascending"}
-    )
 
     return dcc.Graph(figure=fig, className="mb-4")
 
