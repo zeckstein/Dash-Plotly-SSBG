@@ -127,7 +127,7 @@ def layout():
                     ),
                 ]
             ),
-            # Chloropleth Map (Main Feature)
+            # Choropleth Map (Main Feature)
             dbc.Row(
                 dbc.Col(
                     [
@@ -358,7 +358,7 @@ def update_summary_cards(year, service_categories):
     ],
 )
 def update_map(year, service_categories, metric):
-    """Update chloropleth map"""
+    """Update choropleth map"""
     map_data = get_map_data(df, metric, year, service_categories)
     return create_choropleth_map(map_data, metric, f"SSBG {metric.title()} by State")
 
