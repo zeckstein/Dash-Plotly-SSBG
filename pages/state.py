@@ -151,7 +151,6 @@ def layout(state_name="Alabama"):
                 ]
             ),
             # Time Series Graphs
-            # TODO: add line for national average
             dbc.Row(
                 [
                     dbc.Col(
@@ -384,11 +383,6 @@ def update_state_service_recipient_pie(year, pathname):
     )
 
 
-# TODO Make sure line graphs start at zero for y-axis
-# TODO Examine all card subtitles for clarity, consistency, accuracy
-# TODO Consider new cards or graphs to add or swap
-
-
 @callback(
     Output("state-expenditures-time-series", "children"),
     [
@@ -516,7 +510,7 @@ def download_state_csv(n_clicks, year, service_categories, pathname):
         state_name = "Alabama"
 
     table_data = get_state_full_data(df, state_name, year, service_categories)
-    # TODO add year to filename and in national download also
-    filename = f"ssbg_{state_name.replace(' ', '_')}_data.csv"
+
+    filename = f"ssbg_{state_name.replace(' ', '_')}_data_{year}.csv"
 
     return dcc.send_data_frame(table_data.to_csv, filename, index=False)
