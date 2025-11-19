@@ -517,7 +517,7 @@ def update_national_data_table(year, service_categories):
     column_renames = {
         "year": "Year",
         "state_name": "State",
-        "line_number": "Form Line Number",
+        "line_num": "Form Line",
         "service_category": "Service Category",
         "ssbg_expenditures": "SSBG Expenditures",
         "tanf_transfer_funds": "TANF Transfer Funds",
