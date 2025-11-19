@@ -48,7 +48,6 @@ def create_service_category_dropdown(service_categories, id_prefix="national"):
     id_prefix : str
         Prefix for component IDs
     """
-    # TODO : Add scroll behavior for long lists, add all option as default and update callbacks accordingly
     return dbc.Card(
         dbc.CardBody(
             [

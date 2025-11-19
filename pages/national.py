@@ -1,7 +1,5 @@
 """
 National overview page for SSBG dashboard
-# TODO update cards and subtitles
-# TODO add cards for ssbgexp and tanf and then children and adults served (with pie for children v adults (split into adult age categories))
 """
 
 import dash_bootstrap_components as dbc
