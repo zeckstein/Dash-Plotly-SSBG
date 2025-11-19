@@ -123,7 +123,9 @@ def get_state_totals(df, state_name, year=None, service_categories=None):
     }
 
 
-def get_time_series_data(df, metric="expenditures", service_categories=None):
+def get_time_series_data(
+    df, value_col="total_ssbg_expenditures", service_categories=None
+):
     """
     Get time series data for expenditures or recipients by service category
 
@@ -131,8 +133,8 @@ def get_time_series_data(df, metric="expenditures", service_categories=None):
     -----------
     df : pd.DataFrame
         The SSBG dataframe
-    metric : str
-        'expenditures' or 'recipients'
+    value_col : str
+        Column to aggregate (ex.'total_ssbg_expenditures' or 'total_recipients')
     service_categories : list, optional
         List of service categories to filter by
 
@@ -146,11 +148,6 @@ def get_time_series_data(df, metric="expenditures", service_categories=None):
         filtered_df = filtered_df[
             filtered_df["service_category"].isin(service_categories)
         ]
-
-    if metric == "expenditures":
-        value_col = "total_ssbg_expenditures"
-    else:
-        value_col = "total_recipients"
 
     # Group by year and service_category
     grouped = (
@@ -166,7 +163,7 @@ def get_time_series_data(df, metric="expenditures", service_categories=None):
 
 
 def get_state_time_series(
-    df, state_name, metric="expenditures", service_categories=None
+    df, state_name, value_col="total_ssbg_expenditures", service_categories=None
 ):
     """
     Get time series data for a specific state
@@ -177,8 +174,8 @@ def get_state_time_series(
         The SSBG dataframe
     state_name : str
         Name of the state
-    metric : str
-        'expenditures' or 'recipients'
+    value_col : str
+        Column to aggregate (ex.'total_ssbg_expenditures' or 'total_recipients')
     service_categories : list, optional
         List of service categories to filter by
 
@@ -192,11 +189,6 @@ def get_state_time_series(
         filtered_df = filtered_df[
             filtered_df["service_category"].isin(service_categories)
         ]
-
-    if metric == "expenditures":
-        value_col = "total_ssbg_expenditures"
-    else:
-        value_col = "total_recipients"
 
     # Group by year
     grouped = filtered_df.groupby("year")[value_col].sum().reset_index()

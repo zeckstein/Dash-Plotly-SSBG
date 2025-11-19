@@ -392,19 +392,23 @@ def update_state_service_recipient_pie(year, pathname):
 @callback(
     Output("state-expenditures-time-series", "children"),
     [
-        Input("state-year-dropdown", "value"),
         Input("state-service-category-dropdown", "value"),
         Input("url", "pathname"),
     ],
 )
-def update_state_expenditures_time_series(year, service_categories, pathname):
+def update_state_expenditures_time_series(service_categories, pathname):
     """Update state expenditures time series graph"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
     else:
         state_name = "Alabama"
 
-    ts_data = get_state_time_series(df, state_name, "expenditures", service_categories)
+    ts_data = get_state_time_series(
+        df,
+        state_name,
+        value_col="total_ssbg_expenditures",
+        service_categories=service_categories,
+    )
 
     fig = px.line(
         ts_data,
@@ -421,19 +425,23 @@ def update_state_expenditures_time_series(year, service_categories, pathname):
 @callback(
     Output("state-recipients-time-series", "children"),
     [
-        Input("state-year-dropdown", "value"),
         Input("state-service-category-dropdown", "value"),
         Input("url", "pathname"),
     ],
 )
-def update_state_recipients_time_series(year, service_categories, pathname):
+def update_state_recipients_time_series(service_categories, pathname):
     """Update state recipients time series graph"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
     else:
         state_name = "Alabama"
 
-    ts_data = get_state_time_series(df, state_name, "recipients", service_categories)
+    ts_data = get_state_time_series(
+        df,
+        state_name,
+        value_col="total_recipients",
+        service_categories=service_categories,
+    )
 
     fig = px.line(
         ts_data,
