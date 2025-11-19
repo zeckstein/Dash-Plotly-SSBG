@@ -164,6 +164,16 @@ def layout():
                     html.Div(id="national-top-services"), width=12, className="mb-4"
                 )
             ),
+            dbc.Row(
+                dbc.Col(
+                    [
+                        html.H3("Full Data Table", className="mb-3"),
+                        html.Div(id="national-data-table"),
+                    ],
+                    width=12,
+                    className="mb-4",
+                )
+            ),
             # Data Export
             dbc.Row(
                 dbc.Col(
@@ -462,6 +472,91 @@ def update_top_services(year, service_categories):
     )
 
     return dcc.Graph(figure=fig, className="mb-4")
+
+
+@callback(
+    Output("national-data-table", "children"),
+    [
+        Input("national-year-dropdown", "value"),
+        Input("national-service-category-dropdown", "value"),
+    ],
+)
+def update_national_data_table(year, service_categories):
+    """Update national data table"""
+
+    table_data = df.copy()
+    table_data = table_data[table_data["year"] == year] if year else table_data
+    table_data = (
+        table_data[table_data["service_category"].isin(service_categories)]
+        if service_categories
+        else table_data
+    )
+
+    # make columns more readable with $ and ,
+    monetary_columns = [
+        "ssbg_expenditures",
+        "tanf_transfer_funds",
+        "total_ssbg_expenditures",
+        "other_fed_state_and_local_funds",
+        "total_expenditures",
+    ]
+    recipient_columns = [
+        "children",
+        "adults_59_and_younger",
+        "adults_60_and_older",
+        "adults_unknown",
+        "total_adults",
+        "total_recipients",
+    ]
+    for col in monetary_columns:
+        table_data[col] = table_data[col].apply(lambda x: f"${x:,}")
+    for col in recipient_columns:
+        table_data[col] = table_data[col].apply(lambda x: f"{x:,}")
+
+    # rename columns for better readability
+    column_renames = {
+        "year": "Year",
+        "state_name": "State",
+        "line_number": "Form Line Number",
+        "service_category": "Service Category",
+        "ssbg_expenditures": "SSBG Expenditures",
+        "tanf_transfer_funds": "TANF Transfer Funds",
+        "total_ssbg_expenditures": "Total SSBG Expenditures",
+        "other_fed_state_and_local_funds": "All Other Federal/State/Local Funds",
+        "total_expenditures": "Total Expenditures",
+        "children": "Children Served",
+        "adults_59_and_younger": "Adults 59 and Younger Served",
+        "adults_60_and_older": "Adults 60 and Older Served",
+        "adults_unknown": "Adults Unknown Age Served",
+        "total_adults": "Total Adults Served",
+        "total_recipients": "Total Recipients Served",
+    }
+    table_data = table_data.rename(columns=column_renames)
+
+    # Format the table
+    table = dash_table.DataTable(
+        data=table_data.to_dict("records"),
+        columns=[
+            {
+                "name": col,
+                "id": col,
+                "type": "numeric" if table_data[col].dtype == "int64" else "text",
+            }
+            for col in table_data.columns
+        ],
+        page_size=30,
+        sort_action="native",
+        style_cell={
+            "textAlign": "left",
+            "padding": "10px",
+            "fontFamily": "Arial, sans-serif",
+        },
+        style_header={"backgroundColor": "rgb(230, 230, 230)", "fontWeight": "bold"},
+        style_data={"whiteSpace": "normal", "height": "auto"},
+        style_table={"overflowX": "auto"},
+    )
+
+    return table
 
 
 @callback(
