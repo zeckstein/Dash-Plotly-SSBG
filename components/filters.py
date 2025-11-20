@@ -80,7 +80,7 @@ def create_metric_toggle(id_prefix="national"):
     return dbc.Card(
         dbc.CardBody(
             [
-                html.Label("View Metric", className="form-label fw-bold"),
+                html.Label("Map Color Metric", className="form-label fw-bold"),
                 dcc.RadioItems(
                     id=f"{id_prefix}-metric-toggle",
                     options=[
