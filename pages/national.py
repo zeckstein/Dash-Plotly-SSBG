@@ -36,12 +36,52 @@ def layout():
                 dbc.Col(
                     [
                         html.H1(
-                            "SSBG National Overview",
+                            "Social Services Block Grant National Overview",
                             className="text-center mb-4 fw-bold",
                         ),
                         html.P(
-                            "Social Services Block Grant Data Dashboard",
-                            className="text-center text-muted mb-4",
+                            "The Social Services Block Grant (SSBG) is a federal program that provides states and territories with flexible funding to support essential social services for children, adults, and families. Administered by the Office of Community Services (OCS), SSBG empowers local agencies to design programs that meet their communities’ unique needs—from child protection and foster care to employment assistance and pregnancy and parenting services.\n This interactive dashboard offers a transparent view into how SSBG funds are used across the country: ",
+                            className="mb-4",
+                        ),
+                        html.Ul(
+                            [
+                                html.Li(
+                                    "National Overview: Explore aggregated data on service categories, funding allocations, and populations served."
+                                ),
+                                html.Li(
+                                    "State-Level Insights: Click on any state in the map to view detailed data on expenditures, service delivery, and annual trends."
+                                ),
+                            ],
+                            className="mb-4",
+                        ),
+                        html.P(
+                            "The filtered and unfiltered datasets are available for download at the bottom of the page. For additional information about the SSBG program, please visit the program information site, read the SSBG Annual Report, or explore related resources.",
+                        ),
+                        html.Ul(
+                            [
+                                html.Li(
+                                    html.A(
+                                        "ACF SSBG Annual Reports",
+                                        href="https://www.acf.hhs.gov/ocs/resource/ssbg-annual-reports",
+                                        target="_blank",
+                                    )
+                                ),
+                                html.Li(
+                                    html.A(
+                                        "SSBG Program Information",
+                                        href="https://www.acf.hhs.gov/ocs/programs/ssbg",
+                                        target="_blank",
+                                    )
+                                ),
+                                html.Li(
+                                    html.A(
+                                        "Uniform Definition of Services",
+                                        href="https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-A/part-96/appendix-Appendix%20A%20to%20Part%2096",
+                                        target="_blank",
+                                    )
+                                ),
+                            ],
+                            className="mb-4",
                         ),
                     ],
                     width=12,
@@ -114,6 +154,12 @@ def layout():
                 ],
                 className="mb-4",
             ),
+            # Top Service Categories
+            dbc.Row(
+                dbc.Col(
+                    html.Div(id="national-top-services"), width=12, className="mb-4"
+                )
+            ),
             # Metric Toggle Row
             dbc.Row(
                 [
@@ -156,12 +202,7 @@ def layout():
                     ),
                 ]
             ),
-            # Top Service Categories
-            dbc.Row(
-                dbc.Col(
-                    html.Div(id="national-top-services"), width=12, className="mb-4"
-                )
-            ),
+            # Full Data Table
             dbc.Row(
                 dbc.Col(
                     [
@@ -187,43 +228,6 @@ def layout():
                                     className="mt-2",
                                 ),
                                 dcc.Download(id="national-download-csv"),
-                            ]
-                        ),
-                        className="shadow-sm",
-                    ),
-                    width=12,
-                    md=6,
-                    className="mb-4",
-                )
-            ),
-            # Resources Section
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        dbc.CardBody(
-                            [
-                                html.H5("Additional Resources", className="card-title"),
-                                html.P(
-                                    "Links to SSBG annual reports and additional information:"
-                                ),
-                                html.Ul(
-                                    [
-                                        html.Li(
-                                            html.A(
-                                                "ACF SSBG Annual Reports",
-                                                href="https://www.acf.hhs.gov/ocs/resource/ssbg-annual-reports",
-                                                target="_blank",
-                                            )
-                                        ),
-                                        html.Li(
-                                            html.A(
-                                                "SSBG Program Information",
-                                                href="https://www.acf.hhs.gov/ocs/programs/ssbg",
-                                                target="_blank",
-                                            )
-                                        ),
-                                    ]
-                                ),
                             ]
                         ),
                         className="shadow-sm",
@@ -456,9 +460,9 @@ def update_top_services(year, service_categories):
         y="service_category",
         orientation="h",
         title=(
-            f"Top Service Categories by Expenditures ({year})"
+            f"Top 10 Service Categories by Expenditures FY{str(year)[-2:]}"
             if year
-            else "Top Service Categories by Expenditures"
+            else "Top 10 Service Categories by Expenditures"
         ),
         labels={
             "total_ssbg_expenditures": "Expenditures ($)",
