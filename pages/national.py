@@ -111,14 +111,20 @@ def layout():
                 [
                     dbc.Col(
                         id="national-total-ssbg-expenditures-card",
-                        width=12,
-                        md=6,
-                        className="mb-3 align-items-center justify-content-center",
+                        width=8,
+                        md=4,
+                        className="mb-3",
+                    ),
+                    dbc.Col(
+                        id="national-avg-per-person-card",
+                        width=8,
+                        md=4,
+                        className="mb-3",
                     ),
                     dbc.Col(
                         id="national-total-recipients-card",
-                        width=12,
-                        md=6,
+                        width=8,
+                        md=4,
                         className="mb-3",
                     ),
                 ],
@@ -248,6 +254,7 @@ def layout():
     [
         Output("national-total-ssbg-expenditures-card", "children"),
         Output("national-total-recipients-card", "children"),
+        Output("national-avg-per-person-card", "children"),
         Output("national-ssbg-expenditures-card", "children"),
         Output("national-tanf-transfer-card", "children"),
         Output("national-children-card", "children"),
@@ -261,22 +268,23 @@ def layout():
 def update_summary_cards(year, service_categories):
     """Update summary cards"""
     totals = get_national_totals(df, year, service_categories)
-    all_time_totals = get_national_totals(df, None, None)
+    all_time_totals = get_national_totals(df, None, service_categories)
     unique_vals = get_unique_values(df)
 
     total_ssbg_expenditures_card = dbc.Card(
         dbc.CardBody(
             [
                 html.H5(
-                    f"Total SSBG Expenditures FY{str(year)[-2:]}",
-                    className="card-title",
+                    f"Total SSBG Expenditures {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
                 ),
                 html.H2(
-                    f"${totals['total_ssbg_expenditures']:,.0f}", className="fw-bold"
+                    f"${totals['total_ssbg_expenditures']:,.0f}",
+                    className="fw-bold text-center",
                 ),
                 html.P(
                     f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures']:,.0f}",
-                    className="text-muted mb-0",
+                    className="text-muted mb-0 text-center",
                 ),
             ]
         ),
@@ -286,11 +294,37 @@ def update_summary_cards(year, service_categories):
     recipients_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5(f"Total Recipients FY{str(year)[-2:]}", className="card-title"),
-                html.H2(f"{totals['total_recipients']:,.0f}", className="fw-bold"),
+                html.H5(
+                    f"Total Recipients {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
+                ),
+                html.H2(
+                    f"{totals['total_recipients']:,.0f}",
+                    className="fw-bold text-center",
+                ),
                 html.P(
                     f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
-                    className="text-muted mb-0",
+                    className="text-muted mb-0 text-center",
+                ),
+            ]
+        ),
+        className="shadow-sm h-100",
+    )
+
+    avg_per_person_card = dbc.Card(
+        dbc.CardBody(
+            [
+                html.H5(
+                    f"Average $ per Recipient {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
+                ),
+                html.H2(
+                    f"${(totals['total_ssbg_expenditures']/totals['total_recipients']):,.0f}",
+                    className="fw-bold text-center",
+                ),
+                html.P(
+                    f"Average since {min_year}: ${all_time_totals['total_ssbg_expenditures']/all_time_totals['total_recipients']:,.0f}",
+                    className="text-muted mb-0 text-center",
                 ),
             ]
         ),
@@ -301,9 +335,17 @@ def update_summary_cards(year, service_categories):
         dbc.CardBody(
             [
                 html.H5(
-                    f"SSBG Expenditures FY{str(year)[-2:]}", className="card-title"
+                    f"SSBG Expenditures {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
                 ),
-                html.H2(f"${totals['ssbg_expenditures']:,.0f}", className="fw-bold"),
+                html.H2(
+                    f"${totals['ssbg_expenditures']:,.0f}",
+                    className="fw-bold text-center",
+                ),
+                html.P(
+                    f"{(totals['ssbg_expenditures']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures",
+                    className="text-muted mb-0 text-center",
+                ),
             ]
         ),
         className="shadow-sm h-100",
@@ -313,9 +355,17 @@ def update_summary_cards(year, service_categories):
         dbc.CardBody(
             [
                 html.H5(
-                    f"TANF Transfer Funds FY{str(year)[-2:]}", className="card-title"
+                    f"TANF Transfer Funds {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
                 ),
-                html.H2(f"${totals['tanf_transfer_funds']:,.0f}", className="fw-bold"),
+                html.H2(
+                    f"${totals['tanf_transfer_funds']:,.0f}",
+                    className="fw-bold text-center",
+                ),
+                html.P(
+                    f"{(totals['tanf_transfer_funds']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures",
+                    className="text-muted mb-0 text-center",
+                ),
             ]
         ),
         className="shadow-sm h-100",
@@ -324,8 +374,15 @@ def update_summary_cards(year, service_categories):
     children_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5(f"Children Served FY{str(year)[-2:]}", className="card-title"),
-                html.H2(f"{totals['children']:,.0f}", className="fw-bold"),
+                html.H5(
+                    f"Children Served {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
+                ),
+                html.H2(f"{totals['children']:,.0f}", className="fw-bold text-center"),
+                html.P(
+                    f"{(totals['children']/totals['total_recipients'])*100:.0f}% of the Total Recipients",
+                    className="text-muted mb-0 text-center",
+                ),
             ]
         ),
         className="shadow-sm h-100",
@@ -334,8 +391,17 @@ def update_summary_cards(year, service_categories):
     adults_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5(f"Adults Served FY{str(year)[-2:]}", className="card-title"),
-                html.H2(f"{totals['total_adults']:,.0f}", className="fw-bold"),
+                html.H5(
+                    f"Adults Served {'FY'+ str(year)[-2:] if year else f'FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}' }",
+                    className="card-title text-center",
+                ),
+                html.H2(
+                    f"{totals['total_adults']:,.0f}", className="fw-bold text-center"
+                ),
+                html.P(
+                    f"{(totals['total_adults']/totals['total_recipients'])*100:.0f}% of the Total Recipients",
+                    className="text-muted mb-0 text-center",
+                ),
             ]
         ),
         className="shadow-sm h-100",
@@ -344,6 +410,7 @@ def update_summary_cards(year, service_categories):
     return (
         total_ssbg_expenditures_card,
         recipients_card,
+        avg_per_person_card,
         ssbg_expenditures_card,
         tanf_transfer_card,
         children_card,
@@ -362,7 +429,11 @@ def update_summary_cards(year, service_categories):
 def update_map(year, service_categories, metric):
     """Update choropleth map"""
     map_data = get_map_data(df, metric, year, service_categories)
-    return create_choropleth_map(map_data, metric, f"SSBG {metric.title()} by State")
+    return create_choropleth_map(
+        map_data,
+        metric,
+        f"SSBG {metric.title()} by State {'FY'+str(year)[-2:] if year else ''}",
+    )
 
 
 @callback(
@@ -425,20 +496,14 @@ def update_recipients_time_series(year, service_categories):
     Output("national-top-services", "children"),
     [
         Input("national-year-dropdown", "value"),
-        Input("national-service-category-dropdown", "value"),
     ],
 )
-def update_top_services(year, service_categories):
+def update_top_services(year):
     """Update top service categories chart"""
     filtered_df = df.copy()
 
     if year:
         filtered_df = filtered_df[filtered_df["year"].astype(int) == year]
-
-    if service_categories:
-        filtered_df = filtered_df[
-            filtered_df["service_category"].isin(service_categories)
-        ]
 
     # Use selected year
     latest_data = (
@@ -460,9 +525,9 @@ def update_top_services(year, service_categories):
         y="service_category",
         orientation="h",
         title=(
-            f"Top 10 Service Categories by Expenditures FY{str(year)[-2:]}"
+            f"Top 10 Service Categories by Total SSBG Expenditures FY{str(year)[-2:]}"
             if year
-            else "Top 10 Service Categories by Expenditures"
+            else "Top 10 Service Categories by Total SSBG Expenditures"
         ),
         labels={
             "total_ssbg_expenditures": "Expenditures ($)",
