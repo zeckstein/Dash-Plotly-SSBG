@@ -128,7 +128,7 @@ def layout(state_name="Alabama"):
             dbc.Row(
                 [
                     dbc.Col(
-                        id="state-total-expenditures-card",
+                        id="state-total-ssbg-expenditures-card",
                         width=12,
                         md=3,
                         className="mb-3",
@@ -246,7 +246,7 @@ def update_url_from_state_dropdown(selected_state):
 
 @callback(
     [
-        Output("state-total-expenditures-card", "children"),
+        Output("state-total-ssbg-expenditures-card", "children"),
         Output("state-total-recipients-card", "children"),
         Output("state-service-categories-card", "children"),
         Output("state-avg-expenditure-card", "children"),
@@ -271,7 +271,9 @@ def update_state_summary_cards(year, service_categories, pathname):
 
     # Calculate average expenditure per recipient
     avg_expenditure = (
-        totals["expenditures"] / totals["recipients"] if totals["recipients"] > 0 else 0
+        totals["total_ssbg_expenditures"] / totals["total_recipients"]
+        if totals["total_recipients"] > 0
+        else 0
     )
 
     # Get number of service categories
@@ -282,13 +284,15 @@ def update_state_summary_cards(year, service_categories, pathname):
         ]
     num_categories = len(filtered_df["service_category"].unique())
 
-    expenditures_card = dbc.Card(
+    total_SSBG_expenditures_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Total Expenditures", className="card-title"),
-                html.H2(f"${totals['expenditures']:,.0f}", className="fw-bold"),
+                html.H5("Total SSBG Expenditures", className="card-title"),
+                html.H2(
+                    f"${totals['total_ssbg_expenditures']:,.0f}", className="fw-bold"
+                ),
                 html.P(
-                    f"All-time: ${all_time_totals['expenditures']:,.0f}",
+                    f"Average since {min_year}: {all_time_totals['average_total_ssbg_expenditures']:,.0f}",
                     className="text-muted mb-0",
                 ),
             ]
@@ -300,9 +304,9 @@ def update_state_summary_cards(year, service_categories, pathname):
         dbc.CardBody(
             [
                 html.H5("Total Recipients", className="card-title"),
-                html.H2(f"{totals['recipients']:,.0f}", className="fw-bold"),
+                html.H2(f"{totals['total_recipients']:,.0f}", className="fw-bold"),
                 html.P(
-                    f"All-time: {all_time_totals['recipients']:,.0f}",
+                    f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
                     className="text-muted mb-0",
                 ),
             ]
@@ -332,7 +336,7 @@ def update_state_summary_cards(year, service_categories, pathname):
         className="shadow-sm h-100",
     )
 
-    return expenditures_card, recipients_card, categories_card, avg_card
+    return total_SSBG_expenditures_card, recipients_card, categories_card, avg_card
 
 
 @callback(
@@ -344,8 +348,8 @@ def update_state_title(pathname):
     """Update state page title"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
-        return f"SSBG Report: {state_name}"
-    return "SSBG Report: Alabama"
+        return f"SSBG Recipient Report: {state_name}"
+    return "SSBG Recipient Report: Alabama"
 
 
 @callback(

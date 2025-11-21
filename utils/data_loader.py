@@ -105,7 +105,18 @@ def get_state_totals(df, state_name, year=None, service_categories=None):
 
     Returns:
     --------
-    dict with 'expenditures' and 'recipients' totals
+    dict with 'expenditures' and 'recipients' totals:
+    'expenditures' = total SSBG expenditures
+    'recipients' = total recipients
+    'total_expenditures' = total SSBG expenditures + 'Other Fed State and Local funds'
+    'total_ssbg_expenditures' = ssbg_expenditures + 'tanf_transfer_funds'
+    'percent_total_ssbg_expenditures_of_total_expenditures',
+    'average_total_ssbg_expenditures',
+    'average_total_recipients',
+    'average_ssbg_expenditures',
+    'average_tanf_expenditures',
+    'average_child_recipients',
+    'average_adult_recipients',
     """
     filtered_df = df[df["state_name"] == state_name].copy()
 
@@ -118,8 +129,31 @@ def get_state_totals(df, state_name, year=None, service_categories=None):
         ]
 
     return {
-        "expenditures": int(filtered_df["total_ssbg_expenditures"].sum()),
-        "recipients": int(filtered_df["total_recipients"].sum()),
+        "total_ssbg_expenditures": int(filtered_df["total_ssbg_expenditures"].sum()),
+        "ssbg_expenditures": int(filtered_df["ssbg_expenditures"].sum()),
+        "tanf_transfer_funds": int(filtered_df["tanf_transfer_funds"].sum()),
+        "total_recipients": int(filtered_df["total_recipients"].sum()),
+        "children": int(filtered_df["children"].sum()),
+        "total_adults": int(filtered_df["total_adults"].sum()),
+        "total_expenditures": int(filtered_df["total_expenditures"].sum()),
+        "average_total_ssbg_expenditures": int(
+            filtered_df.groupby("year")["total_ssbg_expenditures"].sum().mean()
+        ),
+        "average_total_recipients": int(
+            filtered_df.groupby("year")["total_recipients"].sum().mean()
+        ),
+        "average_ssbg_expenditures": int(
+            filtered_df.groupby("year")["ssbg_expenditures"].sum().mean()
+        ),
+        "average_tanf_expenditures": int(
+            filtered_df.groupby("year")["tanf_transfer_funds"].sum().mean()
+        ),
+        "average_child_recipients": int(
+            filtered_df.groupby("year")["children"].sum().mean()
+        ),
+        "average_adult_recipients": int(
+            filtered_df.groupby("year")["total_adults"].sum().mean()
+        ),
     }
 
 
