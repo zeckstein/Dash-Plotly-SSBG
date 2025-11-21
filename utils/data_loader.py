@@ -161,7 +161,7 @@ def get_state_totals(df, state_name, year=None, service_categories=None):
 
 
 def get_time_series_data(
-    df, value_col="total_ssbg_expenditures", service_categories=None
+    df, value_col="total_ssbg_expenditures", service_categories=None, time_range=None
 ):
     """
     Get time series data for expenditures or recipients by service category
@@ -180,16 +180,23 @@ def get_time_series_data(
     pd.DataFrame with columns: year, service_category, value
     """
     filtered_df = df.copy()
+    filtered_df["year"] = filtered_df["year"].astype(int)
 
     if service_categories:
         filtered_df = filtered_df[
             filtered_df["service_category"].isin(service_categories)
         ]
 
-    # Group by year and service_category
-    grouped = (
-        filtered_df.groupby(["year", "service_category"])[value_col].sum().reset_index()
-    )
+    if time_range:
+        print(f"Filtering data for years between {time_range[0]} and {time_range[1]}")
+        min_year, max_year = time_range
+        filtered_df = filtered_df[
+            (filtered_df["year"].astype(int) >= min_year)
+            & (filtered_df["year"].astype(int) <= max_year)
+        ]
+
+    # Group by year
+    grouped = filtered_df.groupby("year")[value_col].sum().reset_index()
     grouped["year"] = grouped["year"].astype(int)
     grouped = grouped.sort_values("year")
 
@@ -200,7 +207,11 @@ def get_time_series_data(
 
 
 def get_state_time_series(
-    df, state_name, value_col="total_ssbg_expenditures", service_categories=None
+    df,
+    state_name,
+    value_col="total_ssbg_expenditures",
+    service_categories=None,
+    time_range=None,
 ):
     """
     Get time series data for a specific state
@@ -215,6 +226,8 @@ def get_state_time_series(
         Column to aggregate (ex.'total_ssbg_expenditures' or 'total_recipients')
     service_categories : list, optional
         List of service categories to filter by
+    time_range : list or tuple, optional
+        (min_year, max_year) to filter by
 
     Returns:
     --------
@@ -222,9 +235,19 @@ def get_state_time_series(
     """
     filtered_df = df[df["state_name"] == state_name].copy()
 
+    filtered_df["year"] = filtered_df["year"].astype(int)
+
     if service_categories:
         filtered_df = filtered_df[
             filtered_df["service_category"].isin(service_categories)
+        ]
+
+    if time_range:
+        print(f"Filtering data for years between {time_range[0]} and {time_range[1]}")
+        min_year, max_year = time_range
+        filtered_df = filtered_df[
+            (filtered_df["year"].astype(int) >= min_year)
+            & (filtered_df["year"].astype(int) <= max_year)
         ]
 
     # Group by year

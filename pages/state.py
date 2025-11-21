@@ -196,36 +196,62 @@ def layout(state_name="Alabama"):
             dbc.Row(html.H2("Trends Over Time", className="mb-4 fw-bold")),
             # Time range slider (carded and aligned with other controls)
             dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        dbc.CardBody(
-                            [
-                                html.Label(
-                                    "Fiscal Year Range",
-                                    className="form-label fw-bold mb-2",
-                                ),
-                                dcc.RangeSlider(
-                                    id="state-time-series-range-slider",
-                                    min=min_year,
-                                    max=max_year,
-                                    value=[min_year, max_year],
-                                    marks={
-                                        year: str(year)
-                                        for year in range(min_year, max_year + 1)
-                                    },
-                                    step=1,
-                                ),
-                                html.Small(
-                                    "Adjust the range to filter the time series charts.",
-                                    className="text-muted d-block mt-2",
-                                ),
-                            ]
+                [
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.Label(
+                                        "Fiscal Year Range",
+                                        className="form-label fw-bold mb-2",
+                                    ),
+                                    dcc.RangeSlider(
+                                        id="state-time-series-range-slider",
+                                        min=min_year,
+                                        max=max_year,
+                                        value=[min_year, max_year],
+                                        marks={
+                                            year: str(year)
+                                            for year in range(min_year, max_year + 1)
+                                        },
+                                        step=1,
+                                    ),
+                                    html.Small(
+                                        "Adjust the range to filter the time series charts.",
+                                        className="text-muted d-block mt-2",
+                                    ),
+                                ]
+                            ),
+                            className="shadow-sm",
                         ),
-                        className="shadow-sm",
+                        width=6,
+                        className="mb-4",
                     ),
-                    width=12,
-                    className="mb-4",
-                )
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.Label(
+                                        "Service Categories",
+                                        className="form-label fw-bold",
+                                    ),
+                                    dcc.Dropdown(
+                                        id="state-time-series-service-category-dropdown",
+                                        options=[
+                                            {"label": cat, "value": cat}
+                                            for cat in unique_vals["service_categories"]
+                                        ],
+                                        value=[],  # All selected by default
+                                        multi=True,
+                                        placeholder="All service categories selected by default...",
+                                        className="mb-2",
+                                    ),
+                                ]
+                            ),
+                            className="shadow-sm",
+                        ),
+                    ),
+                ]
             ),
             # Time Series Graphs
             dbc.Row(
@@ -470,11 +496,12 @@ def update_state_service_recipient_pie(year, pathname):
 @callback(
     Output("state-expenditures-time-series", "children"),
     [
-        Input("state-service-category-dropdown", "value"),
+        Input("state-time-series-range-slider", "value"),
+        Input("state-time-series-service-category-dropdown", "value"),
         Input("url", "pathname"),
     ],
 )
-def update_state_expenditures_time_series(service_categories, pathname):
+def update_state_expenditures_time_series(time_range, service_categories, pathname):
     """Update state expenditures time series graph"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
@@ -486,6 +513,7 @@ def update_state_expenditures_time_series(service_categories, pathname):
         state_name,
         value_col="total_ssbg_expenditures",
         service_categories=service_categories,
+        time_range=time_range,
     )
 
     fig = px.line(
@@ -496,6 +524,7 @@ def update_state_expenditures_time_series(service_categories, pathname):
         labels={"year": "Year", "value": "Expenditures ($)"},
     )
     fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
+    fig.update_yaxes(range=[0, None])
 
     return dcc.Graph(figure=fig, className="mb-4")
 
@@ -503,11 +532,12 @@ def update_state_expenditures_time_series(service_categories, pathname):
 @callback(
     Output("state-recipients-time-series", "children"),
     [
-        Input("state-service-category-dropdown", "value"),
+        Input("state-time-series-range-slider", "value"),
+        Input("state-time-series-service-category-dropdown", "value"),
         Input("url", "pathname"),
     ],
 )
-def update_state_recipients_time_series(service_categories, pathname):
+def update_state_recipients_time_series(time_range, service_categories, pathname):
     """Update state recipients time series graph"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
@@ -519,6 +549,7 @@ def update_state_recipients_time_series(service_categories, pathname):
         state_name,
         value_col="total_recipients",
         service_categories=service_categories,
+        time_range=time_range,
     )
 
     fig = px.line(
@@ -529,6 +560,7 @@ def update_state_recipients_time_series(service_categories, pathname):
         labels={"year": "Year", "value": "Recipients"},
     )
     fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
+    fig.update_yaxes(range=[0, None])
 
     return dcc.Graph(figure=fig, className="mb-4")
 

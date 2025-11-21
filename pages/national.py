@@ -55,7 +55,7 @@ def layout():
                             className="mb-4",
                         ),
                         html.P(
-                            "The filtered and unfiltered datasets are available for download at the bottom of the page. For additional information about the SSBG program, please visit the program information site, read the SSBG Annual Report, or explore related resources.",
+                            "The filtered and unfiltered datasets are available for download. For additional information about the SSBG program, please visit the program information site, read the SSBG Annual Report, or explore related resources.",
                         ),
                         html.Ul(
                             [
@@ -92,15 +92,35 @@ def layout():
                 [
                     dbc.Col(
                         create_year_dropdown(min_year, max_year, "national"),
-                        width=12,
-                        md=4,
+                        width=3,
                     ),
                     dbc.Col(
                         create_service_category_dropdown(
                             unique_vals["service_categories"], "national"
                         ),
-                        width=8,
-                        md=8,
+                        width=6,
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
+                                        "Download SSBG Dataset FY10-FY22",
+                                        className="card-title",
+                                    ),
+                                    dbc.Button(
+                                        "Download CSV",
+                                        id="national-download-btn",
+                                        color="primary",
+                                        className="mt-2",
+                                    ),
+                                    dcc.Download(id="national-download-csv"),
+                                ]
+                            ),
+                            className="shadow-sm",
+                        ),
+                        width=3,
+                        className="mb-4",
                     ),
                 ],
                 className="mb-4",
@@ -162,9 +182,16 @@ def layout():
             ),
             # Top Service Categories
             dbc.Row(
-                dbc.Col(
-                    html.Div(id="national-top-services"), width=12, className="mb-4"
-                )
+                [
+                    dbc.Col(
+                        html.Div(id="national-top-services"), width=6, className="mb-4"
+                    ),
+                    dbc.Col(
+                        html.Div(id="national-top-services-recipients"),
+                        width=6,
+                        className="mb-4",
+                    ),
+                ]
             ),
             # Metric Toggle Row
             dbc.Row(
@@ -194,16 +221,59 @@ def layout():
                 className="mb-4",
             ),
             # Time Series Graphs
+            # slider
+            dbc.Row(html.H2("Trends Over Time", className="mb-4 fw-bold")),
+            # Time range slider (carded and aligned with other controls)
+            dbc.Row(
+                [
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.Label(
+                                        "Fiscal Year Range",
+                                        className="form-label fw-bold mb-2",
+                                    ),
+                                    dcc.RangeSlider(
+                                        id="national-time-series-range-slider",
+                                        min=min_year,
+                                        max=max_year,
+                                        value=[min_year, max_year],
+                                        marks={
+                                            year: str(year)
+                                            for year in range(min_year, max_year + 1)
+                                        },
+                                        step=1,
+                                    ),
+                                    html.Small(
+                                        "Adjust the range to filter the time series charts.",
+                                        className="text-muted d-block mt-2",
+                                    ),
+                                ]
+                            ),
+                            className="shadow-sm",
+                        ),
+                        width=6,
+                        className="mb-4",
+                    ),
+                    dbc.Col(
+                        create_service_category_dropdown(
+                            unique_vals["service_categories"], "time-series-national"
+                        ),
+                        width=6,
+                    ),
+                ],
+            ),
             dbc.Row(
                 [
                     dbc.Col(
                         html.Div(id="national-expenditures-time-series"),
-                        width=12,
+                        width=6,
                         className="mb-4",
                     ),
                     dbc.Col(
                         html.Div(id="national-recipients-time-series"),
-                        width=12,
+                        width=6,
                         className="mb-4",
                     ),
                 ]
@@ -216,30 +286,6 @@ def layout():
                         html.Div(id="national-data-table"),
                     ],
                     width=12,
-                    className="mb-4",
-                )
-            ),
-            # Data Export
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        dbc.CardBody(
-                            [
-                                html.H5("Export Data", className="card-title"),
-                                html.P("Download the filtered data as CSV"),
-                                dbc.Button(
-                                    "Download CSV",
-                                    id="national-download-btn",
-                                    color="primary",
-                                    className="mt-2",
-                                ),
-                                dcc.Download(id="national-download-csv"),
-                            ]
-                        ),
-                        className="shadow-sm",
-                    ),
-                    width=12,
-                    md=6,
                     className="mb-4",
                 )
             ),
@@ -439,27 +485,28 @@ def update_map(year, service_categories, metric):
 @callback(
     Output("national-expenditures-time-series", "children"),
     [
-        Input("national-year-dropdown", "value"),
-        Input("national-service-category-dropdown", "value"),
+        Input("national-time-series-range-slider", "value"),
+        Input("time-series-national-service-category-dropdown", "value"),
     ],
 )
-def update_expenditures_time_series(year, service_categories):
+def update_expenditures_time_series(time_range, service_categories):
     """Update total_ssbg_expenditures time series graph"""
-    ts_data = get_time_series_data(df, "total_ssbg_expenditures", service_categories)
+    ts_data = get_time_series_data(
+        df, "total_ssbg_expenditures", service_categories, time_range
+    )
 
     fig = px.line(
         ts_data,
         x="year",
         y="value",
-        color="service_category",
         title="SSBG Expenditures Over Time by Service Category",
         labels={
             "year": "Year",
             "value": "Expenditures ($)",
-            "service_category": "Service Category",
         },
     )
     fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
+    fig.update_yaxes(range=[0, None])
 
     return dcc.Graph(figure=fig, className="mb-4")
 
@@ -467,24 +514,24 @@ def update_expenditures_time_series(year, service_categories):
 @callback(
     Output("national-recipients-time-series", "children"),
     [
-        Input("national-year-dropdown", "value"),
-        Input("national-service-category-dropdown", "value"),
+        Input("national-time-series-range-slider", "value"),
+        Input("time-series-national-service-category-dropdown", "value"),
     ],
 )
-def update_recipients_time_series(year, service_categories):
+def update_recipients_time_series(time_range, service_categories):
     """Update recipients time series graph"""
-    ts_data = get_time_series_data(df, "total_recipients", service_categories)
+    ts_data = get_time_series_data(
+        df, "total_recipients", service_categories, time_range
+    )
 
     fig = px.line(
         ts_data,
         x="year",
         y="value",
-        color="service_category",
-        title="SSBG Recipients Over Time by Service Category",
+        title="SSBG Recipients Over Time",
         labels={
             "year": "Year",
             "value": "Recipients",
-            "service_category": "Service Category",
         },
     )
     fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
@@ -531,6 +578,53 @@ def update_top_services(year):
         ),
         labels={
             "total_ssbg_expenditures": "Expenditures ($)",
+            "service_category": "Service Category",
+        },
+    )
+    fig.update_layout(
+        template="plotly_white", height=400, yaxis={"categoryorder": "total ascending"}
+    )
+
+    return dcc.Graph(figure=fig, className="mb-4")
+
+
+@callback(
+    Output("national-top-services-recipients", "children"),
+    [
+        Input("national-year-dropdown", "value"),
+    ],
+)
+def update_top_services_recipients(year):
+    """Update top service categories chart"""
+    filtered_df = df.copy()
+
+    if year:
+        filtered_df = filtered_df[filtered_df["year"].astype(int) == year]
+
+    # Use selected year
+    latest_data = (
+        filtered_df[filtered_df["year"].astype(int) == year] if year else filtered_df
+    )
+
+    service_totals = (
+        latest_data.groupby("service_category")["total_recipients"].sum().reset_index()
+    )
+    service_totals = service_totals.sort_values(
+        "total_recipients", ascending=False
+    ).head(10)
+
+    fig = px.bar(
+        service_totals,
+        x="total_recipients",
+        y="service_category",
+        orientation="h",
+        title=(
+            f"Top 10 Service Categories by Total Recipients FY{str(year)[-2:]}"
+            if year
+            else "Top 10 Service Categories by Total Recipients"
+        ),
+        labels={
+            "total_recipients": "Recipients",
             "service_category": "Service Category",
         },
     )
@@ -629,24 +723,10 @@ def update_national_data_table(year, service_categories):
 @callback(
     Output("national-download-csv", "data"),
     Input("national-download-btn", "n_clicks"),
-    [
-        State("national-year-dropdown", "value"),
-        State("national-service-category-dropdown", "value"),
-    ],
     prevent_initial_call=True,
 )
-def download_csv(n_clicks, year, service_categories):
+def download_csv(n_clicks):
     """Download filtered data as CSV"""
-    filtered_df = df.copy()
+    df_copy = df.copy()
 
-    if year:
-        filtered_df = filtered_df[filtered_df["year"].astype(int) == year]
-
-    if service_categories:
-        filtered_df = filtered_df[
-            filtered_df["service_category"].isin(service_categories)
-        ]
-
-    return dcc.send_data_frame(
-        filtered_df.to_csv, "ssbg_national_data.csv", index=False
-    )
+    return dcc.send_data_frame(df_copy.to_csv, "ssbg_national_data.csv", index=False)
