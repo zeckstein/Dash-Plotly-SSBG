@@ -505,7 +505,16 @@ def update_expenditures_time_series(time_range, service_categories):
             "value": "Expenditures ($)",
         },
     )
-    fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
+    fig.update_layout(
+        template="plotly_white",
+        hovermode="x unified",
+        height=400,
+        xaxis=dict(
+            tickmode="array",
+            tickvals=[int(x) for x in sorted(df["year"].unique()) if str(x).isdigit()],
+            tickformat="d",
+        ),
+    )
     fig.update_yaxes(range=[0, None])
 
     return dcc.Graph(figure=fig, className="mb-4")
@@ -534,7 +543,17 @@ def update_recipients_time_series(time_range, service_categories):
             "value": "Recipients",
         },
     )
-    fig.update_layout(template="plotly_white", hovermode="x unified", height=400)
+    fig.update_layout(
+        template="plotly_white",
+        hovermode="x unified",
+        height=400,
+        xaxis=dict(
+            tickmode="array",
+            tickvals=[int(x) for x in sorted(df["year"].unique()) if str(x).isdigit()],
+            tickformat="d",
+        ),
+    )
+    fig.update_yaxes(range=[0, None])
 
     return dcc.Graph(figure=fig, className="mb-4")
 

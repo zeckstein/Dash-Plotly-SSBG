@@ -48,6 +48,11 @@ def create_time_series_line_chart(
         template="plotly_white",
         hovermode="x unified",
         legend=dict(orientation="v", yanchor="top", y=1, xanchor="left", x=1.01),
+        xaxis=dict(
+            tickmode="array",
+            tickvals=[int(x) for x in sorted(df[x_col].unique()) if str(x).isdigit()],
+            tickformat="d",
+        ),
     )
     return dcc.Graph(figure=fig, className="mb-4")
 
