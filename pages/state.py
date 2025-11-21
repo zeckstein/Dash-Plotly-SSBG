@@ -371,9 +371,9 @@ def update_state_service_bar(year, pathname):
         y_col="service_category",
         orientation="h",
         title=(
-            f"Service Categories by Expenditures ({year}) - {state_name}"
+            f"Expenditures by Service Category FY{str(year)[-2:]} - {state_name}"
             if year
-            else f"Service Categories by Expenditures - {state_name}"
+            else f"Expenditures by Service Category - {state_name}"
         ),
     )
 
@@ -392,29 +392,14 @@ def update_state_service_recipient_pie(year, pathname):
     # service category breakdown by recipients
     breakdown = get_state_service_breakdown(df, state_name, year)
 
-    fig = px.pie(
-        breakdown,
-        names="service_category",
-        values="recipients",
-        title=(
-            f"Service Category Breakdown by Recipients ({year}) - {state_name}"
-            if year
-            else f"Service Category Breakdown by Recipients - {state_name}"
-        ),
-    )
-    fig.update_layout(template="plotly_white", height=400)
-    fig.update_traces(
-        hovertemplate="<b>%{label}</b><br>Recipients: %{value:,}<br>Percent: %{percent}"
-    )
-
     return create_pie_chart(
         breakdown,
         names_col="service_category",
         values_col="recipients",
         title=(
-            f"Service Category Breakdown by Recipients ({year}) - {state_name}"
+            f"Recipients by Service Category FY{str(year)[-2:]} - {state_name}"
             if year
-            else f"Service Category Breakdown by Recipients - {state_name}"
+            else f"Recipients by Service Category - {state_name}"
         ),
         hovertemplate="<b>%{label}</b><br>Recipients: %{value:,}<br>Percent: %{percent}",
     )
