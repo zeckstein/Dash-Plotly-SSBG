@@ -54,6 +54,28 @@ def layout(state_name="Alabama"):
                         dbc.Card(
                             dbc.CardBody(
                                 [
+                                    html.Label("State", className="form-label fw-bold"),
+                                    dcc.Dropdown(
+                                        id="state-selector-dropdown",
+                                        options=[
+                                            {"label": state, "value": state}
+                                            for state in unique_vals["states"]
+                                        ],
+                                        value=state_name,
+                                        placeholder="Select a state...",
+                                        className="mb-2",
+                                    ),
+                                ]
+                            ),
+                            className="shadow-sm",
+                        ),
+                        width=3,
+                        className="mb-3",
+                    ),
+                    dbc.Col(
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
                                     html.Label("Year", className="form-label fw-bold"),
                                     dcc.Dropdown(
                                         id="state-year-dropdown",
@@ -69,8 +91,7 @@ def layout(state_name="Alabama"):
                             ),
                             className="shadow-sm",
                         ),
-                        width=12,
-                        md=6,
+                        width=3,
                         className="mb-3",
                     ),
                     dbc.Col(
@@ -211,6 +232,18 @@ def layout(state_name="Alabama"):
 
 # Store state name in dcc.Store
 # Callbacks
+@callback(
+    Output("url", "pathname", allow_duplicate=True),
+    Input("state-selector-dropdown", "value"),
+    prevent_initial_call=True,
+)
+def update_url_from_state_dropdown(selected_state):
+    """Update URL when state is selected from dropdown"""
+    if selected_state:
+        return f"/state/{selected_state}"
+    return "/state/Alabama"
+
+
 @callback(
     [
         Output("state-total-expenditures-card", "children"),
