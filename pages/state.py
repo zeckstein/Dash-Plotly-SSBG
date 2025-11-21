@@ -154,22 +154,78 @@ def layout(state_name="Alabama"):
                 ],
                 className="mb-4",
             ),
-            # Service Category Breakdown
+            # Service Category Breakdown (cards for consistent styling)
             dbc.Row(
                 [
                     dbc.Col(
-                        html.Div(id="state-service-bar"),
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
+                                        "Expenditures by Service Category",
+                                        className="card-title mb-3",
+                                    ),
+                                    html.Div(id="state-service-bar"),
+                                ]
+                            ),
+                            className="shadow-sm h-100",
+                        ),
                         width=12,
                         md=6,
                         className="mb-4",
                     ),
                     dbc.Col(
-                        html.Div(id="state-service-recipient-pie"),
+                        dbc.Card(
+                            dbc.CardBody(
+                                [
+                                    html.H5(
+                                        "Recipients by Service Category",
+                                        className="card-title mb-3",
+                                    ),
+                                    html.Div(id="state-service-recipient-pie"),
+                                ]
+                            ),
+                            className="shadow-sm h-100",
+                        ),
                         width=12,
                         md=6,
                         className="mb-4",
                     ),
                 ]
+            ),
+            dbc.Row(html.H2("Trends Over Time", className="mb-4 fw-bold")),
+            # Time range slider (carded and aligned with other controls)
+            dbc.Row(
+                dbc.Col(
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                html.Label(
+                                    "Fiscal Year Range",
+                                    className="form-label fw-bold mb-2",
+                                ),
+                                dcc.RangeSlider(
+                                    id="state-time-series-range-slider",
+                                    min=min_year,
+                                    max=max_year,
+                                    value=[min_year, max_year],
+                                    marks={
+                                        year: str(year)
+                                        for year in range(min_year, max_year + 1)
+                                    },
+                                    step=1,
+                                ),
+                                html.Small(
+                                    "Adjust the range to filter the time series charts.",
+                                    className="text-muted d-block mt-2",
+                                ),
+                            ]
+                        ),
+                        className="shadow-sm",
+                    ),
+                    width=12,
+                    className="mb-4",
+                )
             ),
             # Time Series Graphs
             dbc.Row(
@@ -267,7 +323,9 @@ def update_state_summary_cards(year, service_categories, pathname):
         state_name = "Alabama"  # Default
 
     totals = get_state_totals(df, state_name, year, service_categories)
-    all_time_totals = get_state_totals(df, state_name, None, None)
+    all_time_totals = get_state_totals(
+        df, state_name, None, service_categories=service_categories
+    )
 
     # Calculate average expenditure per recipient
     avg_expenditure = (
@@ -282,7 +340,6 @@ def update_state_summary_cards(year, service_categories, pathname):
         filtered_df = filtered_df[
             filtered_df["service_category"].isin(service_categories)
         ]
-    num_categories = len(filtered_df["service_category"].unique())
 
     total_SSBG_expenditures_card = dbc.Card(
         dbc.CardBody(
@@ -317,9 +374,12 @@ def update_state_summary_cards(year, service_categories, pathname):
     categories_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Service Categories", className="card-title"),
-                html.H2(f"{num_categories}", className="fw-bold"),
-                html.P("Active categories", className="text-muted mb-0"),
+                html.H5("Service Categories Funded", className="card-title"),
+                html.H2(f"{totals['num_service_categories']}", className="fw-bold"),
+                html.P(
+                    "service categories funded in whole or in part.",
+                    className="text-muted mb-0",
+                ),
             ]
         ),
         className="shadow-sm h-100",
@@ -328,9 +388,11 @@ def update_state_summary_cards(year, service_categories, pathname):
     avg_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Avg per Recipient", className="card-title"),
+                html.H5("Average per Recipient", className="card-title"),
                 html.H2(f"${avg_expenditure:,.0f}", className="fw-bold"),
-                html.P("Expenditure per recipient", className="text-muted mb-0"),
+                html.P(
+                    f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures'] / all_time_totals['average_total_recipients'] if all_time_totals['average_total_recipients'] > 0 else 0:,.0f}",
+                ),
             ]
         ),
         className="shadow-sm h-100",

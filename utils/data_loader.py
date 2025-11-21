@@ -129,6 +129,9 @@ def get_state_totals(df, state_name, year=None, service_categories=None):
         ]
 
     return {
+        "num_service_categories": filtered_df[
+            filtered_df["total_ssbg_expenditures"] > 0
+        ]["service_category"].nunique(),
         "total_ssbg_expenditures": int(filtered_df["total_ssbg_expenditures"].sum()),
         "ssbg_expenditures": int(filtered_df["ssbg_expenditures"].sum()),
         "tanf_transfer_funds": int(filtered_df["tanf_transfer_funds"].sum()),
