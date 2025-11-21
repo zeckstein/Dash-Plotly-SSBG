@@ -1,5 +1,5 @@
 """
-Chloropleth map component for US states and territories
+Choropleth map component for US states and territories
 """
 
 import plotly.graph_objects as go
