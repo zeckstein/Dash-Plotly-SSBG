@@ -64,6 +64,7 @@ def layout(state_name="Alabama"):
                                         value=state_name,
                                         placeholder="Select a state...",
                                         className="mb-2",
+                                        clearable=False,
                                     ),
                                 ]
                             ),
@@ -86,6 +87,7 @@ def layout(state_name="Alabama"):
                                         value=max_year,
                                         placeholder="Select year...",
                                         className="mb-2",
+                                        clearable=False,
                                     ),
                                 ]
                             ),
@@ -270,17 +272,6 @@ def layout(state_name="Alabama"):
                     ),
                 ]
             ),
-            # Data Table
-            dbc.Row(
-                dbc.Col(
-                    [
-                        html.H3("Full Data Table", className="mb-3"),
-                        html.Div(id="state-data-table"),
-                    ],
-                    width=12,
-                    className="mb-4",
-                )
-            ),
             # Data Export
             dbc.Row(
                 dbc.Col(
@@ -288,7 +279,7 @@ def layout(state_name="Alabama"):
                         dbc.CardBody(
                             [
                                 html.H5("Export Data", className="card-title"),
-                                html.P("Download the filtered data as CSV"),
+                                html.P("Download the full data FY10-FY22 as a CSV"),
                                 dbc.Button(
                                     "Download CSV",
                                     id="state-download-btn",
@@ -300,8 +291,18 @@ def layout(state_name="Alabama"):
                         ),
                         className="shadow-sm",
                     ),
+                    width=4,
+                    className="mb-4",
+                )
+            ),
+            # Data Table
+            dbc.Row(
+                dbc.Col(
+                    [
+                        html.H3("Full Data Table", className="mb-3"),
+                        html.Div(id="state-data-table"),
+                    ],
                     width=12,
-                    md=6,
                     className="mb-4",
                 )
             ),
@@ -370,7 +371,10 @@ def update_state_summary_cards(year, service_categories, pathname):
     total_SSBG_expenditures_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Total SSBG Expenditures", className="card-title"),
+                html.H5(
+                    f"Total SSBG Expenditures FY{str(year)[-2:]}",
+                    className="card-title",
+                ),
                 html.H2(
                     f"${totals['total_ssbg_expenditures']:,.0f}", className="fw-bold"
                 ),
@@ -386,7 +390,7 @@ def update_state_summary_cards(year, service_categories, pathname):
     recipients_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Total Recipients", className="card-title"),
+                html.H5(f"Total Recipients FY{str(year)[-2:]}", className="card-title"),
                 html.H2(f"{totals['total_recipients']:,.0f}", className="fw-bold"),
                 html.P(
                     f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
@@ -400,7 +404,10 @@ def update_state_summary_cards(year, service_categories, pathname):
     categories_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Service Categories Funded", className="card-title"),
+                html.H5(
+                    f"Service Categories Funded FY{str(year)[-2:]}",
+                    className="card-title",
+                ),
                 html.H2(f"{totals['num_service_categories']}", className="fw-bold"),
                 html.P(
                     "service categories funded in whole or in part.",
@@ -414,10 +421,13 @@ def update_state_summary_cards(year, service_categories, pathname):
     avg_card = dbc.Card(
         dbc.CardBody(
             [
-                html.H5("Average per Recipient", className="card-title"),
+                html.H5(
+                    f"Average per Recipient FY{str(year)[-2:]}", className="card-title"
+                ),
                 html.H2(f"${avg_expenditure:,.0f}", className="fw-bold"),
                 html.P(
                     f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures'] / all_time_totals['average_total_recipients'] if all_time_totals['average_total_recipients'] > 0 else 0:,.0f}",
+                    className="text-muted mb-0",
                 ),
             ]
         ),
@@ -612,21 +622,19 @@ def update_state_data_table(year, service_categories, pathname):
     Output("state-download-csv", "data"),
     Input("state-download-btn", "n_clicks"),
     [
-        State("state-year-dropdown", "value"),
-        State("state-service-category-dropdown", "value"),
         State("url", "pathname"),
     ],
     prevent_initial_call=True,
 )
-def download_state_csv(n_clicks, year, service_categories, pathname):
+def download_state_csv(n_clicks, pathname):
     """Download filtered state data as CSV"""
     if pathname and pathname.startswith("/state/"):
         state_name = unquote(pathname.replace("/state/", ""))
     else:
         state_name = "Alabama"
 
-    table_data = get_state_full_data(df, state_name, year, service_categories)
+    table_data = get_state_full_data(df, state_name, None, None)
 
-    filename = f"ssbg_{state_name.replace(' ', '_')}_data_{year}.csv"
+    filename = f"ssbg_{state_name.replace(' ', '_')}_data_FY10-FY22.csv"
 
     return dcc.send_data_frame(table_data.to_csv, filename, index=False)
