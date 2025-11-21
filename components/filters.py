@@ -30,6 +30,7 @@ def create_year_dropdown(min_year, max_year, id_prefix="national"):
                     value=max_year,  # Default to latest year
                     placeholder="Select year...",
                     className="mb-2",
+                    clearable=False,
                 ),
             ]
         ),
