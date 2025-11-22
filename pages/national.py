@@ -55,7 +55,7 @@ def layout():
                             className="mb-4",
                         ),
                         html.P(
-                            "The filtered and unfiltered datasets are available for download. For additional information about the SSBG program, please visit the program information site, read the SSBG Annual Report, or explore related resources.",
+                            "The filtered and unfiltered datasets are available for download. For additional information about the SSBG program, please visit the program information site, read the SSBG Annual Report, or explore related resources. To contact the creator of this dashboard, please see the footer at the bottom of the page.",
                         ),
                         html.Ul(
                             [
