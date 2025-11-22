@@ -1,12 +1,13 @@
-# SSBG Dashboard
+# [SSBG Dashboard](https://dash-plotly-ssbg.onrender.com)
 
-A Dash Plotly web application for visualizing Social Services Block Grant (SSBG) data from states and territories.
+A Dash Plotly web app for visualizing Social Services Block Grant (SSBG) data from states.  
+The application is currently hosted on render.com ['SSBG Data Dashboard](https://dash-plotly-ssbg.onrender.com).
 
 ## Features
 
 - **National Overview Page**
   - Summary cards with total expenditures and recipients
-  - Interactive chloropleth map of US states and territories
+  - Interactive choropleth map of US states
   - Time series graphs for expenditures and recipients by service category
   - Filter controls for year range and service categories
   - Toggle between expenditures and recipients view on map
@@ -50,11 +51,20 @@ gunicorn app:server
 
 ### Render.com
 
-1. Connect GitHub repository
-2. Set build command: `uv sync` (or `pip install -r requirements.txt` if using pip)
-3. Set start command: `gunicorn app:server`
-4. Deploy!
+1. Connect your GitHub repository
+  - In Render, click New → Web Service → Connect to GitHub and select this repository and branch.
+2. Set the build command
+  - Preferred (uv): `uv sync`
+3. Set the start command
+  - `gunicorn app:server`
+4. Deploy
+  - Create the service and click "Deploy Web Service” in Render. Subsequent pushes to the connected branch will trigger new builds.
 
+### Plotly Cloud Free Tier
+1. Create a new app on Plotly Cloud
+2. Drag and Drop your Dash app code to upload
+3. Configure by setting the python version
+4. After building, set to public visibility
 
 ## Project Structure
 
@@ -71,7 +81,7 @@ Dash-Plotly-SSBG/
 │   ├── cards.py          # Reusable card components
 │   ├── filters.py        # Filter control components
 │   ├── graphs.py         # Graph components
-│   └── map.py            # Chloropleth map component
+│   └── map.py            # Choropleth map component
 ├── pages/
 │   ├── national.py       # National overview page
 │   └── state.py          # State report pages
