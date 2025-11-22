@@ -609,6 +609,46 @@ def update_state_data_table(year, service_categories, pathname):
         state_name = "Alabama"
 
     table_data = get_state_full_data(df, state_name, year, service_categories)
+    # make columns more readable with $ and ,
+    monetary_columns = [
+        "ssbg_expenditures",
+        "tanf_transfer_funds",
+        "total_ssbg_expenditures",
+        "other_fed_state_and_local_funds",
+        "total_expenditures",
+    ]
+    recipient_columns = [
+        "children",
+        "adults_59_and_younger",
+        "adults_60_and_older",
+        "adults_unknown",
+        "total_adults",
+        "total_recipients",
+    ]
+    for col in monetary_columns:
+        table_data[col] = table_data[col].apply(lambda x: f"${x:,}")
+    for col in recipient_columns:
+        table_data[col] = table_data[col].apply(lambda x: f"{x:,}")
+
+    # rename columns for better readability
+    column_renames = {
+        "year": "Year",
+        "state_name": "State",
+        "line_num": "Form Line",
+        "service_category": "Service Category",
+        "ssbg_expenditures": "SSBG Expenditures",
+        "tanf_transfer_funds": "TANF Transfer Funds",
+        "total_ssbg_expenditures": "Total SSBG Expenditures",
+        "other_fed_state_and_local_funds": "All Other Federal/State/Local Funds",
+        "total_expenditures": "Total Expenditures",
+        "children": "Children Served",
+        "adults_59_and_younger": "Adults 59 and Younger Served",
+        "adults_60_and_older": "Adults 60 and Older Served",
+        "adults_unknown": "Adults Unknown Age Served",
+        "total_adults": "Total Adults Served",
+        "total_recipients": "Total Recipients Served",
+    }
+    table_data = table_data.rename(columns=column_renames)
 
     # Format the table
     table = dash_table.DataTable(
