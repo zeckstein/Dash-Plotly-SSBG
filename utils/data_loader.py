@@ -136,22 +136,22 @@ def get_state_totals(
         "total_adults": int(filtered_df[COL_ADULTS].sum()),
         "total_expenditures": int(filtered_df[COL_TOTAL_EXPENDITURES].sum()),
         "average_total_ssbg_expenditures": int(
-            filtered_df.groupby(COL_YEAR)[COL_TOTAL_SSBG_EXPENDITURES].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_TOTAL_SSBG_EXPENDITURES].sum().mean()
         ),
         "average_total_recipients": int(
-            filtered_df.groupby(COL_YEAR)[COL_TOTAL_RECIPIENTS].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_TOTAL_RECIPIENTS].sum().mean()
         ),
         "average_ssbg_expenditures": int(
-            filtered_df.groupby(COL_YEAR)[COL_SSBG_EXPENDITURES].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_SSBG_EXPENDITURES].sum().mean()
         ),
         "average_tanf_expenditures": int(
-            filtered_df.groupby(COL_YEAR)[COL_TANF_TRANSFER].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_TANF_TRANSFER].sum().mean()
         ),
         "average_child_recipients": int(
-            filtered_df.groupby(COL_YEAR)[COL_CHILDREN].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_CHILDREN].sum().mean()
         ),
         "average_adult_recipients": int(
-            filtered_df.groupby(COL_YEAR)[COL_ADULTS].sum().mean()
+            filtered_df.groupby(COL_YEAR, observed=True)[COL_ADULTS].sum().mean()
         ),
     }
 
@@ -252,7 +252,7 @@ def get_state_time_series(
         ]
 
     # Group by year
-    grouped = filtered_df.groupby(COL_YEAR)[value_col].sum().reset_index()
+    grouped = filtered_df.groupby(COL_YEAR, observed=True)[value_col].sum().reset_index()
     grouped[COL_YEAR] = grouped[COL_YEAR].astype(int)
     grouped = grouped.sort_values(COL_YEAR)
 
@@ -298,7 +298,7 @@ def get_map_data(
 
     # Group by state
     grouped = (
-        filtered_df.groupby(COL_STATE)
+        filtered_df.groupby(COL_STATE, observed=True)
         .agg(
             {
                 COL_TOTAL_SSBG_EXPENDITURES: "sum",
@@ -345,7 +345,7 @@ def get_state_service_breakdown(
         filtered_df = filtered_df[filtered_df[COL_YEAR].astype(int) == year]
 
     grouped = (
-        filtered_df.groupby(COL_SERVICE_CATEGORY)
+        filtered_df.groupby(COL_SERVICE_CATEGORY, observed=True)
         .agg({COL_TOTAL_SSBG_EXPENDITURES: "sum", COL_TOTAL_RECIPIENTS: "sum"})
         .reset_index()
     )
