@@ -2,8 +2,9 @@
 Reusable card components for the dashboard
 """
 import dash_bootstrap_components as dbc
+from dash import html
 
-def create_summary_card(title, value, subtitle=None, color="primary"):
+def create_summary_card(title, value, subtitle=None, footer=None, color="primary"):
     """
     Create a summary card component
     
@@ -14,26 +15,28 @@ def create_summary_card(title, value, subtitle=None, color="primary"):
     value : str or number
         Main value to display
     subtitle : str, optional
-        Subtitle text
+        Subtitle text (displayed below title)
+    footer : str, optional
+        Footer text (displayed below value, often for averages or percentages)
     color : str
-        Bootstrap color theme
+        Bootstrap color theme or custom color class
     """
     return dbc.Card(
         dbc.CardBody(
             [
-                dbc.CardTitle(title, className="card-title"),
-                dbc.CardSubtitle(
-                    subtitle,
-                    className="mb-2 text-muted"
-                ) if subtitle else None,
-                dbc.CardText(
+                html.H5(title, className="card-title text-center"),
+                html.H6(subtitle, className="card-subtitle mb-2 text-muted text-center") if subtitle else None,
+                html.H2(
                     value,
-                    className="display-4 fw-bold"
+                    className="fw-bold text-center"
                 ),
+                html.P(
+                    footer,
+                    className="text-muted mb-0 text-center"
+                ) if footer else None,
             ]
         ),
-        className="mb-3 shadow-sm",
-        color=color,
-        outline=True
+        className="shadow-sm h-100",
+        # color=color, # We are using custom CSS for colors mostly, or default white cards with colored text
+        # outline=True
     )
-

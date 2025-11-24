@@ -5,66 +5,16 @@ Choropleth map component for US states and territories
 import plotly.graph_objects as go
 from dash import dcc
 import pandas as pd
-
-# State abbreviations mapping (including territories)
-STATE_ABBREV = {
-    "Alabama": "AL",
-    "Alaska": "AK",
-    "Arizona": "AZ",
-    "Arkansas": "AR",
-    "California": "CA",
-    "Colorado": "CO",
-    "Connecticut": "CT",
-    "Delaware": "DE",
-    "Florida": "FL",
-    "Georgia": "GA",
-    "Hawaii": "HI",
-    "Idaho": "ID",
-    "Illinois": "IL",
-    "Indiana": "IN",
-    "Iowa": "IA",
-    "Kansas": "KS",
-    "Kentucky": "KY",
-    "Louisiana": "LA",
-    "Maine": "ME",
-    "Maryland": "MD",
-    "Massachusetts": "MA",
-    "Michigan": "MI",
-    "Minnesota": "MN",
-    "Mississippi": "MS",
-    "Missouri": "MO",
-    "Montana": "MT",
-    "Nebraska": "NE",
-    "Nevada": "NV",
-    "New Hampshire": "NH",
-    "New Jersey": "NJ",
-    "New Mexico": "NM",
-    "New York": "NY",
-    "North Carolina": "NC",
-    "North Dakota": "ND",
-    "Ohio": "OH",
-    "Oklahoma": "OK",
-    "Oregon": "OR",
-    "Pennsylvania": "PA",
-    "Rhode Island": "RI",
-    "South Carolina": "SC",
-    "South Dakota": "SD",
-    "Tennessee": "TN",
-    "Texas": "TX",
-    "Utah": "UT",
-    "Vermont": "VT",
-    "Virginia": "VA",
-    "Washington": "WA",
-    "West Virginia": "WV",
-    "Wisconsin": "WI",
-    "Wyoming": "WY",
-    "District of Columbia": "DC",
-    "Puerto Rico": "PR",
-    "Guam": "GU",
-    "U.S. Virgin Islands": "VI",
-    "American Samoa": "AS",
-    "Northern Mariana Islands": "MP",
-}
+from utils.constants import (
+    STATE_ABBREV,
+    COL_STATE,
+    COL_TOTAL_SSBG_EXPENDITURES,
+    COL_SSBG_EXPENDITURES,
+    COL_TANF_TRANSFER,
+    COL_TOTAL_RECIPIENTS,
+    COL_CHILDREN,
+    COL_ADULTS,
+)
 
 
 def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
@@ -82,7 +32,7 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
     """
     # Create a copy and add state abbreviations
     map_df = df.copy()
-    map_df["state_abbrev"] = map_df["state_name"].map(STATE_ABBREV)
+    map_df["state_abbrev"] = map_df[COL_STATE].map(STATE_ABBREV)
 
     # Filter out states without abbreviations (if any)
     map_df = map_df[map_df["state_abbrev"].notna()]
@@ -102,19 +52,19 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             colorscale=ssbg_colorscale,
             text=map_df.apply(
                 lambda row: (
-                    f"<b style='font-size:32px;'>{row['state_name']}</b><br>"
+                    f"<b style='font-size:32px;'>{row[COL_STATE]}</b><br>"
                     f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span> "
-                    f"<b style='font-size:20px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
+                    f"<b style='font-size:20px;'>${row[COL_TOTAL_SSBG_EXPENDITURES]:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>SSBG Expenditures:</span> "
-                    f"<b style='font-size:16px;'>${row['ssbg_expenditures']:,.0f}</b><br>"
+                    f"<b style='font-size:16px;'>${row[COL_SSBG_EXPENDITURES]:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>TANF Transfer Funds:</span> "
-                    f"<b style='font-size:16px;'>${row['tanf_transfer_funds']:,.0f}</b><br>"
+                    f"<b style='font-size:16px;'>${row[COL_TANF_TRANSFER]:,.0f}</b><br>"
                     f"<span style='font-size:20px;'><b>Total Recipients:</b></span> "
-                    f"<b style='font-size:20px;'>{row['total_recipients']:,.0f}</b><br>"
+                    f"<b style='font-size:20px;'>{row[COL_TOTAL_RECIPIENTS]:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>Children:</span> "
-                    f"<b style='font-size:16px;'>{row['children']:,.0f}</b><br>"
+                    f"<b style='font-size:16px;'>{row[COL_CHILDREN]:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>Adults:</span> "
-                    f"<b style='font-size:16px;'>{row['total_adults']:,.0f}</b>"
+                    f"<b style='font-size:16px;'>{row[COL_ADULTS]:,.0f}</b>"
                 ),
                 axis=1,
             ),

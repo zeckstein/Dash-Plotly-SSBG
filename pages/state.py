@@ -15,11 +15,25 @@ from utils.data_loader import (
     get_state_full_data,
     get_unique_values,
 )
+from utils.constants import (
+    COL_YEAR,
+    COL_STATE,
+    COL_SERVICE_CATEGORY,
+    COL_TOTAL_SSBG_EXPENDITURES,
+    COL_TOTAL_RECIPIENTS,
+    COL_SSBG_EXPENDITURES,
+    COL_TANF_TRANSFER,
+    COL_CHILDREN,
+    COL_ADULTS,
+    COL_TOTAL_EXPENDITURES,
+    DISPLAY_NAMES,
+)
 from components.graphs import (
     create_pie_chart,
     create_time_series_line_chart,
     create_bar_chart,
 )
+from components.cards import create_summary_card
 
 # Load data once
 df = load_data()
@@ -361,77 +375,28 @@ def update_state_summary_cards(year, service_categories, pathname):
         else 0
     )
 
-    # Get number of service categories
-    filtered_df = df[df["state_name"] == state_name].copy()
-    if service_categories:
-        filtered_df = filtered_df[
-            filtered_df["service_category"].isin(service_categories)
-        ]
-
-    total_SSBG_expenditures_card = dbc.Card(
-        dbc.CardBody(
-            [
-                html.H5(
-                    f"Total SSBG Expenditures FY{str(year)[-2:]}",
-                    className="card-title",
-                ),
-                html.H2(
-                    f"${totals['total_ssbg_expenditures']:,.0f}", className="fw-bold"
-                ),
-                html.P(
-                    f"Average since {min_year}: {all_time_totals['average_total_ssbg_expenditures']:,.0f}",
-                    className="text-muted mb-0",
-                ),
-            ]
-        ),
-        className="shadow-sm h-100",
+    total_SSBG_expenditures_card = create_summary_card(
+        title=f"Total SSBG Expenditures FY{str(year)[-2:]}",
+        value=f"${totals['total_ssbg_expenditures']:,.0f}",
+        footer=f"Average since {min_year}: {all_time_totals['average_total_ssbg_expenditures']:,.0f}"
     )
 
-    recipients_card = dbc.Card(
-        dbc.CardBody(
-            [
-                html.H5(f"Total Recipients FY{str(year)[-2:]}", className="card-title"),
-                html.H2(f"{totals['total_recipients']:,.0f}", className="fw-bold"),
-                html.P(
-                    f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
-                    className="text-muted mb-0",
-                ),
-            ]
-        ),
-        className="shadow-sm h-100",
+    recipients_card = create_summary_card(
+        title=f"Total Recipients FY{str(year)[-2:]}",
+        value=f"{totals['total_recipients']:,.0f}",
+        footer=f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}"
     )
 
-    categories_card = dbc.Card(
-        dbc.CardBody(
-            [
-                html.H5(
-                    f"Service Categories Funded FY{str(year)[-2:]}",
-                    className="card-title",
-                ),
-                html.H2(f"{totals['num_service_categories']}", className="fw-bold"),
-                html.P(
-                    "service categories funded in whole or in part.",
-                    className="text-muted mb-0",
-                ),
-            ]
-        ),
-        className="shadow-sm h-100",
+    categories_card = create_summary_card(
+        title=f"Service Categories Funded FY{str(year)[-2:]}",
+        value=f"{totals['num_service_categories']}",
+        footer="service categories funded in whole or in part."
     )
 
-    avg_card = dbc.Card(
-        dbc.CardBody(
-            [
-                html.H5(
-                    f"Average per Recipient FY{str(year)[-2:]}", className="card-title"
-                ),
-                html.H2(f"${avg_expenditure:,.0f}", className="fw-bold"),
-                html.P(
-                    f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures'] / all_time_totals['average_total_recipients'] if all_time_totals['average_total_recipients'] > 0 else 0:,.0f}",
-                    className="text-muted mb-0",
-                ),
-            ]
-        ),
-        className="shadow-sm h-100",
+    avg_card = create_summary_card(
+        title=f"Average per Recipient FY{str(year)[-2:]}",
+        value=f"${avg_expenditure:,.0f}",
+        footer=f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures'] / all_time_totals['average_total_recipients'] if all_time_totals['average_total_recipients'] > 0 else 0:,.0f}"
     )
 
     return total_SSBG_expenditures_card, recipients_card, categories_card, avg_card
@@ -521,17 +486,17 @@ def update_state_expenditures_time_series(time_range, service_categories, pathna
     ts_data = get_state_time_series(
         df,
         state_name,
-        value_col="total_ssbg_expenditures",
+        value_col=COL_TOTAL_SSBG_EXPENDITURES,
         service_categories=service_categories,
         time_range=time_range,
     )
 
     fig = px.line(
         ts_data,
-        x="year",
+        x=COL_YEAR,
         y="value",
         title=f"SSBG Expenditures Over Time - {state_name}",
-        labels={"year": "Year", "value": "Expenditures ($)"},
+        labels={COL_YEAR: "Year", "value": "Expenditures ($)"},
     )
     fig.update_layout(
         template="plotly_white",
@@ -539,7 +504,7 @@ def update_state_expenditures_time_series(time_range, service_categories, pathna
         height=400,
         xaxis=dict(
             tickmode="array",
-            tickvals=[int(x) for x in sorted(df["year"].unique()) if str(x).isdigit()],
+            tickvals=[int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()],
             tickformat="d",
         ),
     )
@@ -566,17 +531,17 @@ def update_state_recipients_time_series(time_range, service_categories, pathname
     ts_data = get_state_time_series(
         df,
         state_name,
-        value_col="total_recipients",
+        value_col=COL_TOTAL_RECIPIENTS,
         service_categories=service_categories,
         time_range=time_range,
     )
 
     fig = px.line(
         ts_data,
-        x="year",
+        x=COL_YEAR,
         y="value",
         title=f"SSBG Recipients Over Time - {state_name}",
-        labels={"year": "Year", "value": "Recipients"},
+        labels={COL_YEAR: "Year", "value": "Recipients"},
     )
     fig.update_layout(
         template="plotly_white",
@@ -584,7 +549,7 @@ def update_state_recipients_time_series(time_range, service_categories, pathname
         height=400,
         xaxis=dict(
             tickmode="array",
-            tickvals=[int(x) for x in sorted(df["year"].unique()) if str(x).isdigit()],
+            tickvals=[int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()],
             tickformat="d",
         ),
     )
@@ -611,19 +576,19 @@ def update_state_data_table(year, service_categories, pathname):
     table_data = get_state_full_data(df, state_name, year, service_categories)
     # make columns more readable with $ and ,
     monetary_columns = [
-        "ssbg_expenditures",
-        "tanf_transfer_funds",
-        "total_ssbg_expenditures",
+        COL_SSBG_EXPENDITURES,
+        COL_TANF_TRANSFER,
+        COL_TOTAL_SSBG_EXPENDITURES,
         "other_fed_state_and_local_funds",
-        "total_expenditures",
+        COL_TOTAL_EXPENDITURES,
     ]
     recipient_columns = [
-        "children",
+        COL_CHILDREN,
         "adults_59_and_younger",
         "adults_60_and_older",
         "adults_unknown",
-        "total_adults",
-        "total_recipients",
+        COL_ADULTS,
+        COL_TOTAL_RECIPIENTS,
     ]
     for col in monetary_columns:
         table_data[col] = table_data[col].apply(lambda x: f"${x:,}")
@@ -631,24 +596,7 @@ def update_state_data_table(year, service_categories, pathname):
         table_data[col] = table_data[col].apply(lambda x: f"{x:,}")
 
     # rename columns for better readability
-    column_renames = {
-        "year": "Year",
-        "state_name": "State",
-        "line_num": "Form Line",
-        "service_category": "Service Category",
-        "ssbg_expenditures": "SSBG Expenditures",
-        "tanf_transfer_funds": "TANF Transfer Funds",
-        "total_ssbg_expenditures": "Total SSBG Expenditures",
-        "other_fed_state_and_local_funds": "All Other Federal/State/Local Funds",
-        "total_expenditures": "Total Expenditures",
-        "children": "Children Served",
-        "adults_59_and_younger": "Adults 59 and Younger Served",
-        "adults_60_and_older": "Adults 60 and Older Served",
-        "adults_unknown": "Adults Unknown Age Served",
-        "total_adults": "Total Adults Served",
-        "total_recipients": "Total Recipients Served",
-    }
-    table_data = table_data.rename(columns=column_renames)
+    table_data = table_data.rename(columns=DISPLAY_NAMES)
 
     # Format the table
     table = dash_table.DataTable(
