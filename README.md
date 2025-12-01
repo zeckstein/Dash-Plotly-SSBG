@@ -1,7 +1,7 @@
 # [SSBG Dashboard](https://dash-plotly-ssbg.onrender.com)
 
 A Dash Plotly web app for visualizing Social Services Block Grant (SSBG) data from states.  
-The application is currently hosted on render.com ['SSBG Data Dashboard](https://dash-plotly-ssbg.onrender.com).
+The application is currently hosted on render.com [SSBG Data Dashboard](https://dash-plotly-ssbg.onrender.com).
 
 ## Features
 
