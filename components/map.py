@@ -52,21 +52,6 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             colorscale=ssbg_colorscale,
             text=map_df.apply(
                 lambda row: (
-<<<<<<< HEAD
-                    f"<b style='font-size:24px; font-family:Arial;'>{row['state_name']}</b><br><br>"
-                    f"<span style='font-size:16px; text-decoration: underline;'><b>Total SSBG Expenditures:</b></span> "
-                    f"<b style='font-size:16px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
-                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;SSBG Expenditures:</span> "
-                    f"<span style='font-size:14px; color: #555;'>${row['ssbg_expenditures']:,.0f}</span><br>"
-                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;TANF Transfer Funds:</span> "
-                    f"<span style='font-size:14px; color: #555;'>${row['tanf_transfer_funds']:,.0f}</span><br><br>"
-                    f"<span style='font-size:16px; text-decoration: underline;'><b>Total Recipients:</b></span> "
-                    f"<b style='font-size:16px;'>{row['total_recipients']:,.0f}</b><br>"
-                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;Children:</span> "
-                    f"<span style='font-size:14px; color: #555;'>{row['children']:,.0f}</span><br>"
-                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;Adults:</span> "
-                    f"<span style='font-size:14px; color: #555;'>{row['total_adults']:,.0f}</span>"
-=======
                     f"<b style='font-size:32px;'>{row[COL_STATE]}</b><br>"
                     f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span> "
                     f"<b style='font-size:20px;'>${row[COL_TOTAL_SSBG_EXPENDITURES]:,.0f}</b><br>"
@@ -80,7 +65,6 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
                     f"<b style='font-size:16px;'>{row[COL_CHILDREN]:,.0f}</b><br>"
                     f"<span style='font-size:16px;'>Adults:</span> "
                     f"<b style='font-size:16px;'>{row[COL_ADULTS]:,.0f}</b>"
->>>>>>> main
                 ),
                 axis=1,
             ),
@@ -104,7 +88,6 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             projection_scale=1,
             showlakes=True,
             lakecolor="rgb(255, 255, 255)",
-
         ),
         height=600,
         margin=dict(l=0, r=0, t=50, b=0),
