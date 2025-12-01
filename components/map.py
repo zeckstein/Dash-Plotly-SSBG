@@ -135,11 +135,14 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
         geo=dict(
             scope="usa",
             projection=go.layout.geo.Projection(type="albers usa"),
+            projection_scale=1,
             showlakes=True,
             lakecolor="rgb(255, 255, 255)",
+
         ),
         height=600,
         margin=dict(l=0, r=0, t=50, b=0),
+        dragmode=False,
     )
     fig.update_traces(
         hoverlabel=dict(
