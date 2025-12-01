@@ -69,226 +69,278 @@ def layout():
                         create_service_category_dropdown(
                             unique_vals["service_categories"], "national"
                         ),
-                        width=6,
+                        width=9,
                     ),
-                    dbc.Col(
-                        dbc.Card(
-                            dbc.CardBody(
+                ],
+                className="mb-4",
+            ),
+            dbc.Tabs(
+                [
+                    dbc.Tab(
+                        [
+                            # Summary Cards
+                            # Summary Cards Row (Total SSBG Expenditures & Total Recipients)
+                            dbc.Row(
                                 [
-                                    html.H5(
-                                        "Download SSBG Dataset FY10-FY22",
-                                        className="card-title",
+                                    dbc.Col(
+                                        id="national-total-ssbg-expenditures-card",
+                                        width=8,
+                                        md=4,
+                                        className="mb-3",
                                     ),
-                                    dbc.Button(
-                                        "Download CSV",
-                                        id="national-download-btn",
-                                        color="primary",
-                                        className="mt-2",
+                                    dbc.Col(
+                                        id="national-avg-per-person-card",
+                                        width=8,
+                                        md=4,
+                                        className="mb-3",
                                     ),
-                                    dcc.Download(id="national-download-csv"),
-                                ]
+                                    dbc.Col(
+                                        id="national-total-recipients-card",
+                                        width=8,
+                                        md=4,
+                                        className="mb-3",
+                                    ),
+                                ],
+                                className="mb-4 mt-4",
                             ),
-                            className="shadow-sm",
-                        ),
-                        width=3,
-                        className="mb-4",
-                    ),
-                ],
-                className="mb-4",
-            ),
-            # Summary Cards
-            # Summary Cards Row (Total SSBG Expenditures & Total Recipients)
-            dbc.Row(
-                [
-                    dbc.Col(
-                        id="national-total-ssbg-expenditures-card",
-                        width=8,
-                        md=4,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-avg-per-person-card",
-                        width=8,
-                        md=4,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-total-recipients-card",
-                        width=8,
-                        md=4,
-                        className="mb-3",
-                    ),
-                ],
-                className="mb-4",
-            ),
-            # Subtotals Row (SSBG Expenditures, TANF Transfer Funds, Children, Adults)
-            dbc.Row(
-                [
-                    dbc.Col(
-                        id="national-ssbg-expenditures-card",
-                        width=12,
-                        md=3,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-tanf-transfer-card",
-                        width=12,
-                        md=3,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-children-card",
-                        width=12,
-                        md=3,
-                        className="mb-3",
-                    ),
-                    dbc.Col(
-                        id="national-adults-card",
-                        width=12,
-                        md=3,
-                        className="mb-3",
-                    ),
-                ],
-                className="mb-4",
-            ),
-            # Top Service Categories
-            dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(id="national-top-services"), width=6, className="mb-4"
-                    ),
-                    dbc.Col(
-                        html.Div(id="national-top-services-recipients"),
-                        width=6,
-                        className="mb-4",
-                    ),
-                ]
-            ),
-            # Choropleth Map (Main Feature) with Metric Toggle
-            dbc.Row(
-                dbc.Col(
-                    dbc.Card(
-                        dbc.CardBody(
-                            [
-                                dbc.Row(
-                                    [
-                                        dbc.Col(
-                                            html.H4(
-                                                "State-Level Insights",
-                                                className="card-title",
-                                            ),
-                                            width=12,
-                                            md=8,
-                                        ),
-                                        dbc.Col(
-                                            dbc.RadioItems(
-                                                id="national-metric-toggle",
-                                                className="btn-group",
-                                                inputClassName="btn-check",
-                                                labelClassName="btn btn-outline-primary",
-                                                labelCheckedClassName="active",
-                                                options=[
-                                                    {
-                                                        "label": "Recipients",
-                                                        "value": "recipients",
-                                                    },
-                                                    {
-                                                        "label": "Expenditures",
-                                                        "value": "expenditures",
-                                                    },
-                                                ],
-                                                value="recipients",
-                                            ),
-                                            width=12,
-                                            md=4,
-                                            className="d-flex justify-content-md-end",
-                                        ),
-                                    ],
-                                    className="mb-3 align-items-center",
-                                ),
-                                html.P(
-                                    "Click on a state to view detailed state report",
-                                    className="text-muted mb-3",
-                                ),
-                                html.Div(
-                                    id="national-choropleth-map",
-                                    style={"cursor": "pointer"},
-                                ),
-                            ]
-                        ),
-                        className="shadow-sm",
-                    ),
-                    width=12,
-                ),
-                className="mb-4",
-            ),
-            # Time Series Graphs
-            # slider
-            dbc.Row(html.H2("Trends Over Time", className="mb-4 fw-bold")),
-            # Time range slider (carded and aligned with other controls)
-            dbc.Row(
-                [
-                    dbc.Col(
-                        dbc.Card(
-                            dbc.CardBody(
+                            # Subtotals Row (SSBG Expenditures, TANF Transfer Funds, Children, Adults)
+                            dbc.Row(
                                 [
-                                    html.Label(
-                                        "Fiscal Year Range",
-                                        className="form-label fw-bold mb-2",
+                                    dbc.Col(
+                                        id="national-ssbg-expenditures-card",
+                                        width=12,
+                                        md=3,
+                                        className="mb-3",
                                     ),
-                                    dcc.RangeSlider(
-                                        id="national-time-series-range-slider",
-                                        min=min_year,
-                                        max=max_year,
-                                        value=[min_year, max_year],
-                                        marks={
-                                            year: str(year)
-                                            for year in range(min_year, max_year + 1)
-                                        },
-                                        step=1,
+                                    dbc.Col(
+                                        id="national-tanf-transfer-card",
+                                        width=12,
+                                        md=3,
+                                        className="mb-3",
                                     ),
-                                    html.Small(
-                                        "Adjust the range to filter the time series charts.",
-                                        className="text-muted d-block mt-2",
+                                    dbc.Col(
+                                        id="national-children-card",
+                                        width=12,
+                                        md=3,
+                                        className="mb-3",
+                                    ),
+                                    dbc.Col(
+                                        id="national-adults-card",
+                                        width=12,
+                                        md=3,
+                                        className="mb-3",
+                                    ),
+                                ],
+                                className="mb-4",
+                            ),
+                            # Top Service Categories
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        html.Div(id="national-top-services"),
+                                        width=6,
+                                        className="mb-4",
+                                    ),
+                                    dbc.Col(
+                                        html.Div(
+                                            id="national-top-services-recipients"
+                                        ),
+                                        width=6,
+                                        className="mb-4",
                                     ),
                                 ]
                             ),
-                            className="shadow-sm",
-                        ),
-                        width=6,
-                        className="mb-4",
+                        ],
+                        label="Summary",
                     ),
-                    dbc.Col(
-                        create_service_category_dropdown(
-                            unique_vals["service_categories"], "time-series-national"
-                        ),
-                        width=6,
+                    dbc.Tab(
+                        [
+                            # Choropleth Map (Main Feature) with Metric Toggle
+                            dbc.Row(
+                                dbc.Col(
+                                    dbc.Card(
+                                        dbc.CardBody(
+                                            [
+                                                dbc.Row(
+                                                    [
+                                                        dbc.Col(
+                                                            html.H4(
+                                                                "State-Level Insights",
+                                                                className="card-title",
+                                                            ),
+                                                            width=12,
+                                                            md=8,
+                                                        ),
+                                                        dbc.Col(
+                                                            dbc.RadioItems(
+                                                                id="national-metric-toggle",
+                                                                className="btn-group",
+                                                                inputClassName="btn-check",
+                                                                labelClassName="btn btn-outline-primary",
+                                                                labelCheckedClassName="active",
+                                                                options=[
+                                                                    {
+                                                                        "label": "Recipients",
+                                                                        "value": "recipients",
+                                                                    },
+                                                                    {
+                                                                        "label": "Expenditures",
+                                                                        "value": "expenditures",
+                                                                    },
+                                                                ],
+                                                                value="recipients",
+                                                            ),
+                                                            width=12,
+                                                            md=4,
+                                                            className="d-flex justify-content-md-end",
+                                                        ),
+                                                    ],
+                                                    className="mb-3 align-items-center",
+                                                ),
+                                                html.P(
+                                                    "Click on a state to view detailed state report",
+                                                    className="text-muted mb-3",
+                                                ),
+                                                html.Div(
+                                                    id="national-choropleth-map",
+                                                    style={"cursor": "pointer"},
+                                                ),
+                                            ]
+                                        ),
+                                        className="shadow-sm",
+                                    ),
+                                    width=12,
+                                ),
+                                className="mb-4 mt-4",
+                            ),
+                        ],
+                        label="Map",
+                    ),
+                    dbc.Tab(
+                        [
+                            # Time Series Graphs
+                            # slider
+                            dbc.Row(
+                                html.H2(
+                                    "Trends Over Time", className="mb-4 fw-bold mt-4"
+                                )
+                            ),
+                            # Time range slider (carded and aligned with other controls)
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        dbc.Card(
+                                            dbc.CardBody(
+                                                [
+                                                    html.Label(
+                                                        "Fiscal Year Range",
+                                                        className="form-label fw-bold mb-2",
+                                                    ),
+                                                    dcc.RangeSlider(
+                                                        id="national-time-series-range-slider",
+                                                        min=min_year,
+                                                        max=max_year,
+                                                        value=[min_year, max_year],
+                                                        marks={
+                                                            year: str(year)
+                                                            for year in range(
+                                                                min_year, max_year + 1
+                                                            )
+                                                        },
+                                                        step=1,
+                                                    ),
+                                                    html.Small(
+                                                        "Adjust the range to filter the time series charts.",
+                                                        className="text-muted d-block mt-2",
+                                                    ),
+                                                ]
+                                            ),
+                                            className="shadow-sm",
+                                        ),
+                                        width=6,
+                                        className="mb-4",
+                                    ),
+                                    dbc.Col(
+                                        create_service_category_dropdown(
+                                            unique_vals["service_categories"],
+                                            "time-series-national",
+                                        ),
+                                        width=6,
+                                    ),
+                                ],
+                            ),
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        html.Div(
+                                            id="national-expenditures-time-series"
+                                        ),
+                                        width=6,
+                                        className="mb-4",
+                                    ),
+                                    dbc.Col(
+                                        html.Div(
+                                            id="national-recipients-time-series"
+                                        ),
+                                        width=6,
+                                        className="mb-4",
+                                    ),
+                                ]
+                            ),
+                        ],
+                        label="Trends Over Time",
                     ),
                 ],
-            ),
-            dbc.Row(
-                [
-                    dbc.Col(
-                        html.Div(id="national-expenditures-time-series"),
-                        width=6,
-                        className="mb-4",
-                    ),
-                    dbc.Col(
-                        html.Div(id="national-recipients-time-series"),
-                        width=6,
-                        className="mb-4",
-                    ),
-                ]
+                className="mb-4",
             ),
             # Full Data Table
             dbc.Row(
                 dbc.Col(
-                    [
-                        html.H3("Full Data Table", className="mb-3"),
-                        html.Div(id="national-data-table"),
-                    ],
+                    dbc.Card(
+                        [
+                            dbc.CardHeader(
+                                [
+                                    html.H3("Full Data Table", className="mb-0", style={"color": "white"}),
+                                    html.Div(
+                                        [
+                                            dbc.Button(
+                                                "Download CSV",
+                                                id="national-download-btn",
+                                                style={
+                                                    "backgroundColor": "#0066cc",
+                                                    "color": "white",
+                                                    "padding": "8px 16px",
+                                                    "borderRadius": "4px",
+                                                    "border": "none",
+                                                },
+                                            ),
+                                            dcc.Download(id="national-download-csv"),
+                                        ],
+                                        className="d-flex align-items-center gap-3",
+                                    ),
+                                ],
+                                className="d-flex justify-content-between align-items-center p-3",
+                                style={"backgroundColor": "white"},
+                            ),
+                            dbc.CardBody(
+                                dcc.Loading(
+                                    id="loading-national-data-table",
+                                    type="circle",
+                                    children=html.Div(
+                                        id="national-data-table",
+                                        style={
+                                            "minHeight": "550px",
+                                            "height": "calc(100vh - 600px)",
+                                            "width": "100%",
+                                        },
+                                    ),
+                                ),
+                                className="p-0",
+                            ),
+                        ],
+                        className="shadow-sm mb-4",
+                    ),
                     width=12,
-                    className="mb-4",
                 )
             ),
         ],
@@ -621,11 +673,11 @@ def update_national_data_table(year, service_categories):
         style_cell={
             "textAlign": "left",
             "padding": "10px",
-            "fontFamily": "Arial, sans-serif",
+            "fontFamily": "monospace",
         },
         style_header={"backgroundColor": "rgb(230, 230, 230)", "fontWeight": "bold"},
         style_data={"whiteSpace": "normal", "height": "auto"},
-        style_table={"overflowX": "auto"},
+        style_table={"overflowX": "auto", "height": "100%", "minHeight": "550px"},
     )
 
     return table
