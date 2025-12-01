@@ -16,7 +16,6 @@ from utils.data_loader import (
 from components.filters import (
     create_year_dropdown,
     create_service_category_dropdown,
-    create_metric_toggle,
 )
 from components.map import create_choropleth_map
 
@@ -193,29 +192,60 @@ def layout():
                     ),
                 ]
             ),
-            # Metric Toggle Row
-            dbc.Row(
-                [
-                    dbc.Col(
-                        create_metric_toggle("national"),
-                        width=12,
-                        md=4,
-                        className="d-flex flex-column justify-content-end",
-                    ),
-                ]
-            ),
-            # Choropleth Map (Main Feature)
+            # Choropleth Map (Main Feature) with Metric Toggle
             dbc.Row(
                 dbc.Col(
-                    [
-                        html.P(
-                            "Click on a state to view detailed state report",
-                            className="text-center text-muted mb-3",
+                    dbc.Card(
+                        dbc.CardBody(
+                            [
+                                dbc.Row(
+                                    [
+                                        dbc.Col(
+                                            html.H4(
+                                                "State-Level Insights",
+                                                className="card-title",
+                                            ),
+                                            width=12,
+                                            md=8,
+                                        ),
+                                        dbc.Col(
+                                            dbc.RadioItems(
+                                                id="national-metric-toggle",
+                                                className="btn-group",
+                                                inputClassName="btn-check",
+                                                labelClassName="btn btn-outline-primary",
+                                                labelCheckedClassName="active",
+                                                options=[
+                                                    {
+                                                        "label": "Recipients",
+                                                        "value": "recipients",
+                                                    },
+                                                    {
+                                                        "label": "Expenditures",
+                                                        "value": "expenditures",
+                                                    },
+                                                ],
+                                                value="recipients",
+                                            ),
+                                            width=12,
+                                            md=4,
+                                            className="d-flex justify-content-md-end",
+                                        ),
+                                    ],
+                                    className="mb-3 align-items-center",
+                                ),
+                                html.P(
+                                    "Click on a state to view detailed state report",
+                                    className="text-muted mb-3",
+                                ),
+                                html.Div(
+                                    id="national-choropleth-map",
+                                    style={"cursor": "pointer"},
+                                ),
+                            ]
                         ),
-                        html.Div(
-                            id="national-choropleth-map", style={"cursor": "pointer"}
-                        ),
-                    ],
+                        className="shadow-sm",
+                    ),
                     width=12,
                 ),
                 className="mb-4",
