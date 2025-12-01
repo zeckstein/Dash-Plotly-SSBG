@@ -102,19 +102,19 @@ def create_choropleth_map(df, metric="recipients", title="SSBG Data by State"):
             colorscale=ssbg_colorscale,
             text=map_df.apply(
                 lambda row: (
-                    f"<b style='font-size:32px;'>{row['state_name']}</b><br>"
-                    f"<span style='font-size:20px;'><b>Total SSBG Expenditures:</b></span> "
-                    f"<b style='font-size:20px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
-                    f"<span style='font-size:16px;'>SSBG Expenditures:</span> "
-                    f"<b style='font-size:16px;'>${row['ssbg_expenditures']:,.0f}</b><br>"
-                    f"<span style='font-size:16px;'>TANF Transfer Funds:</span> "
-                    f"<b style='font-size:16px;'>${row['tanf_transfer_funds']:,.0f}</b><br>"
-                    f"<span style='font-size:20px;'><b>Total Recipients:</b></span> "
-                    f"<b style='font-size:20px;'>{row['total_recipients']:,.0f}</b><br>"
-                    f"<span style='font-size:16px;'>Children:</span> "
-                    f"<b style='font-size:16px;'>{row['children']:,.0f}</b><br>"
-                    f"<span style='font-size:16px;'>Adults:</span> "
-                    f"<b style='font-size:16px;'>{row['total_adults']:,.0f}</b>"
+                    f"<b style='font-size:24px; font-family:Arial;'>{row['state_name']}</b><br><br>"
+                    f"<span style='font-size:16px; text-decoration: underline;'><b>Total SSBG Expenditures:</b></span> "
+                    f"<b style='font-size:16px;'>${row['total_ssbg_expenditures']:,.0f}</b><br>"
+                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;SSBG Expenditures:</span> "
+                    f"<span style='font-size:14px; color: #555;'>${row['ssbg_expenditures']:,.0f}</span><br>"
+                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;TANF Transfer Funds:</span> "
+                    f"<span style='font-size:14px; color: #555;'>${row['tanf_transfer_funds']:,.0f}</span><br><br>"
+                    f"<span style='font-size:16px; text-decoration: underline;'><b>Total Recipients:</b></span> "
+                    f"<b style='font-size:16px;'>{row['total_recipients']:,.0f}</b><br>"
+                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;Children:</span> "
+                    f"<span style='font-size:14px; color: #555;'>{row['children']:,.0f}</span><br>"
+                    f"<span style='font-size:14px; color: #555;'>&nbsp;&nbsp;Adults:</span> "
+                    f"<span style='font-size:14px; color: #555;'>{row['total_adults']:,.0f}</span>"
                 ),
                 axis=1,
             ),
