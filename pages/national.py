@@ -52,7 +52,7 @@ def layout():
                             className="mb-4 fw-bold",
                         ),
                         html.P(
-                            "The Social Services Block Grant (SSBG) is a federal program that provides states and territories with flexible funding to support essential social services for children, adults, and families. Administered by the Office of Community Services (OCS), SSBG empowers local agencies to design programs that meet their communities’ unique needs—from child protection and foster care to employment assistance and pregnancy and parenting services.\n This interactive dashboard offers a transparent view into how SSBG funds are used across the country.",
+                            "The Social Services Block Grant (SSBG) is a federal program that provides states and territories with flexible funding to support essential social services for children, adults, and families. SSBG empowers local agencies to design programs that meet their communities’ unique needs—from child protection and foster care to employment assistance and pregnancy and parenting services.\n This interactive dashboard offers a transparent view into how SSBG funds are used across the country.",
                         ),
                     ],
                     width=12,
@@ -142,9 +142,7 @@ def layout():
                                         className="mb-4",
                                     ),
                                     dbc.Col(
-                                        html.Div(
-                                            id="national-top-services-recipients"
-                                        ),
+                                        html.Div(id="national-top-services-recipients"),
                                         width=6,
                                         className="mb-4",
                                     ),
@@ -279,9 +277,7 @@ def layout():
                                         className="mb-4",
                                     ),
                                     dbc.Col(
-                                        html.Div(
-                                            id="national-recipients-time-series"
-                                        ),
+                                        html.Div(id="national-recipients-time-series"),
                                         width=6,
                                         className="mb-4",
                                     ),
@@ -300,7 +296,11 @@ def layout():
                         [
                             dbc.CardHeader(
                                 [
-                                    html.H3("Full Data Table", className="mb-0", style={"color": "white"}),
+                                    html.H3(
+                                        "Full Data Table",
+                                        className="mb-0",
+                                        style={"color": "white"},
+                                    ),
                                     html.Div(
                                         [
                                             dbc.Button(
@@ -369,49 +369,77 @@ def update_summary_cards(year, service_categories):
     """Update summary cards"""
     totals = get_national_totals(df, year, service_categories)
     all_time_totals = get_national_totals(df, None, service_categories)
-    
-    year_suffix = f"FY{str(year)[-2:]}" if year else f"FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}"
+
+    year_suffix = (
+        f"FY{str(year)[-2:]}"
+        if year
+        else f"FY{str(min_year)[-2:]}-FY{str(max_year)[-2:]}"
+    )
 
     total_ssbg_expenditures_card = create_summary_card(
         title=f"Total SSBG Expenditures {year_suffix}",
         value=f"${totals['total_ssbg_expenditures']:,.0f}",
-        footer=f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures']:,.0f}"
+        footer=f"Average since {min_year}: ${all_time_totals['average_total_ssbg_expenditures']:,.0f}",
     )
 
     recipients_card = create_summary_card(
         title=f"Total Recipients {year_suffix}",
         value=f"{totals['total_recipients']:,.0f}",
-        footer=f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}"
+        footer=f"Average since {min_year}: {all_time_totals['average_total_recipients']:,.0f}",
     )
 
     avg_per_person_card = create_summary_card(
         title=f"Average $ per Recipient {year_suffix}",
-        value=f"${(totals['total_ssbg_expenditures']/totals['total_recipients']):,.0f}" if totals['total_recipients'] > 0 else "$0",
-        footer=f"Average since {min_year}: ${all_time_totals['total_ssbg_expenditures']/all_time_totals['total_recipients']:,.0f}" if all_time_totals['total_recipients'] > 0 else "$0"
+        value=(
+            f"${(totals['total_ssbg_expenditures']/totals['total_recipients']):,.0f}"
+            if totals["total_recipients"] > 0
+            else "$0"
+        ),
+        footer=(
+            f"Average since {min_year}: ${all_time_totals['total_ssbg_expenditures']/all_time_totals['total_recipients']:,.0f}"
+            if all_time_totals["total_recipients"] > 0
+            else "$0"
+        ),
     )
 
     ssbg_expenditures_card = create_summary_card(
         title=f"SSBG Expenditures {year_suffix}",
         value=f"${totals['ssbg_expenditures']:,.0f}",
-        footer=f"{(totals['ssbg_expenditures']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures" if totals['total_ssbg_expenditures'] > 0 else "0%"
+        footer=(
+            f"{(totals['ssbg_expenditures']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures"
+            if totals["total_ssbg_expenditures"] > 0
+            else "0%"
+        ),
     )
 
     tanf_transfer_card = create_summary_card(
         title=f"TANF Transfer Funds {year_suffix}",
         value=f"${totals['tanf_transfer_funds']:,.0f}",
-        footer=f"{(totals['tanf_transfer_funds']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures" if totals['total_ssbg_expenditures'] > 0 else "0%"
+        footer=(
+            f"{(totals['tanf_transfer_funds']/totals['total_ssbg_expenditures'])*100:.0f}% of the Total SSBG Expenditures"
+            if totals["total_ssbg_expenditures"] > 0
+            else "0%"
+        ),
     )
 
     children_card = create_summary_card(
         title=f"Children Served {year_suffix}",
         value=f"{totals['children']:,.0f}",
-        footer=f"{(totals['children']/totals['total_recipients'])*100:.0f}% of the Total Recipients" if totals['total_recipients'] > 0 else "0%"
+        footer=(
+            f"{(totals['children']/totals['total_recipients'])*100:.0f}% of the Total Recipients"
+            if totals["total_recipients"] > 0
+            else "0%"
+        ),
     )
 
     adults_card = create_summary_card(
         title=f"Adults Served {year_suffix}",
         value=f"{totals['total_adults']:,.0f}",
-        footer=f"{(totals['total_adults']/totals['total_recipients'])*100:.0f}% of the Total Recipients" if totals['total_recipients'] > 0 else "0%"
+        footer=(
+            f"{(totals['total_adults']/totals['total_recipients'])*100:.0f}% of the Total Recipients"
+            if totals["total_recipients"] > 0
+            else "0%"
+        ),
     )
 
     return (
@@ -472,7 +500,9 @@ def update_expenditures_time_series(time_range, service_categories):
         height=400,
         xaxis=dict(
             tickmode="array",
-            tickvals=[int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()],
+            tickvals=[
+                int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()
+            ],
             tickformat="d",
         ),
     )
@@ -510,7 +540,9 @@ def update_recipients_time_series(time_range, service_categories):
         height=400,
         xaxis=dict(
             tickmode="array",
-            tickvals=[int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()],
+            tickvals=[
+                int(x) for x in sorted(df[COL_YEAR].unique()) if str(x).isdigit()
+            ],
             tickformat="d",
         ),
     )
@@ -587,7 +619,9 @@ def update_top_services_recipients(year):
     )
 
     service_totals = (
-        latest_data.groupby(COL_SERVICE_CATEGORY)[COL_TOTAL_RECIPIENTS].sum().reset_index()
+        latest_data.groupby(COL_SERVICE_CATEGORY)[COL_TOTAL_RECIPIENTS]
+        .sum()
+        .reset_index()
     )
     service_totals = service_totals.sort_values(
         COL_TOTAL_RECIPIENTS, ascending=False
